@@ -41,7 +41,7 @@
           </el-submenu>
         </el-menu>
       </el-aside>
-      <el-main><router-view/></el-main>
+      <el-main class="main"><router-view/></el-main>
     </el-container>
   </el-container>
 </template>
@@ -71,9 +71,14 @@ export default {
     }
   }
   .left-side{
+    background $main-color
     .menu{
       height 100%
+      border-right none
     }
+  }
+  .main{
+    background $main-color
   }
 }
 </style>
