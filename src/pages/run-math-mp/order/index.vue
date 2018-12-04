@@ -1,6 +1,6 @@
 <template>
-  <div class="page index-page">
-    <router-view></router-view>
+  <div class="page order-page">
+    订单
   </div>
 </template>
 <script>

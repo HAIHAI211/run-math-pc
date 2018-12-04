@@ -1,6 +1,6 @@
 <template>
-  <div class="page index-page">
-    <router-view></router-view>
+  <div class="page adv-page">
+    广告
   </div>
 </template>
 <script>

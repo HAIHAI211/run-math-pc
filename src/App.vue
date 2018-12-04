@@ -6,8 +6,9 @@
     <el-container>
       <el-aside class="left-side">
         <el-menu
-          default-active="2"
+          default-active="rule"
           class="menu"
+          :router="true"
           @open="_openMenu"
           @close="_closeMenu"
           text-color="#fff"
@@ -25,12 +26,12 @@
             <!--<el-menu-item-group title="分组2">-->
               <!--<el-menu-item index="1-3">选项3</el-menu-item>-->
             <!--</el-menu-item-group>-->
-            <el-submenu index="1-4">
+            <el-submenu index="run-math-mp">
               <template slot="title">步好玩</template>
-              <el-menu-item index="1-4-1">规则</el-menu-item>
-              <el-menu-item index="1-4-2">礼品</el-menu-item>
-              <el-menu-item index="1-4-3">广告</el-menu-item>
-              <el-menu-item index="1-4-4">订单</el-menu-item>
+              <el-menu-item index="rule">规则</el-menu-item>
+              <el-menu-item index="gift">礼品</el-menu-item>
+              <el-menu-item index="adv">广告</el-menu-item>
+              <el-menu-item index="order">订单</el-menu-item>
             </el-submenu>
           </el-submenu>
           <el-submenu index="2">

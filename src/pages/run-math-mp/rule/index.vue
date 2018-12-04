@@ -1,6 +1,6 @@
 <template>
-  <div class="page index-page">
-    <router-view></router-view>
+  <div class="page rule-page">
+    规则
   </div>
 </template>
 <script>

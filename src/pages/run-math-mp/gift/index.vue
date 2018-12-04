@@ -1,6 +1,6 @@
 <template>
-  <div class="page index-page">
-    <router-view></router-view>
+  <div class="page gift-page">
+    礼品
   </div>
 </template>
 <script>

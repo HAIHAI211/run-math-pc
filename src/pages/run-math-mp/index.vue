@@ -1,5 +1,5 @@
 <template>
-  <div class="page index-page">
+  <div class="app run-math-mp-app">
     <router-view></router-view>
   </div>
 </template>
