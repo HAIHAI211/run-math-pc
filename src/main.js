@@ -4,7 +4,7 @@ import Vue from 'vue'
 import store from './store'
 import App from './App'
 import router from './router'
-import '@/assets/stylus/index.styl'
+import '@/assets/style/index.styl'
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */

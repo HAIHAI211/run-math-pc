@@ -16,8 +16,8 @@ export default new Vuex.Store({
   plugins: [
     createPersistedState({
       storage: {
-        getItem: key => window.getItem(key),
-        setItem: (key, value) => window.setItem(key, value),
+        getItem: key => window.localStorage.getItem(key),
+        setItem: (key, value) => window.localStorage.setItem(key, value),
         removeItem: key => {}
       }
     })
