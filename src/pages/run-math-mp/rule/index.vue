@@ -3,7 +3,7 @@
     <el-card class="rule-card">
       <div slot="header">
         <span>规则设置</span>
-        <span class="submit-state">{{updateStateMsg}}</span>
+        <span :class="['submit-state', 'state-' + updateState]">{{updateStateMsg}}</span>
       </div>
       <el-form ref="form" :model="form" label-width="170px" class="form">
         <el-form-item label="数学币汇率：">
@@ -26,6 +26,14 @@
           <my-input-number size="medium" v-model="form.shareCoin" @change="_inputNumberChange" :min="1" :max="100000" :step="1" label="分享奖励"></my-input-number>
           <span class="input-number-suffix">数学币/次</span>
         </el-form-item>
+        <el-form-item label="规则文本：">
+          <el-input
+            type="textarea"
+            :rows="4"
+            placeholder="请输入内容"
+            v-model="form.textarea">
+          </el-input>
+        </el-form-item>
       </el-form>
     </el-card>
   </div>
@@ -43,7 +51,8 @@ export default {
         coin: 1,
         stepLimit: 10000,
         shareLimit: 10,
-        shareCoin: 100
+        shareCoin: 100,
+        ruleText: ''
       },
       timeFlag: null,
       lastTime: 0,
@@ -54,7 +63,7 @@ export default {
     updateStateMsg () {
       switch (this.updateState) {
         case 0:
-          return '初始状态'
+          return ''
         case 1:
           return '正在修改...'
         case 2:
@@ -78,10 +87,10 @@ export default {
   },
   methods: {
     _inputNumberChange (v) {
-      console.log('inputNumber', v)
+      // console.log('inputNumber', v)
     },
     _handleInput (e) {
-      console.log('inputfsaf', e)
+      // console.log('inputfsaf', e)
     },
     onSubmit () {
       // console.log('submit!')
@@ -95,7 +104,10 @@ export default {
     .submit-state{
       padding-left 30px
       font-size 13px
-      color lightseagreen
+      color $active-color
+      &.state-2{
+        color #999
+      }
     }
     .form{
       .exchange{

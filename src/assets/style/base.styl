@@ -7,3 +7,7 @@ html,body{
 .apps-container, .app, .page{
   height 100%
 }
+.el-input.is-active .el-input__inner,.el-input__inner:focus{border-color:$active-color;outline:0}
+.el-input-number__decrease:hover,.el-input-number__increase:hover{color:$active-color}
+.el-input-number__decrease:hover:not(.is-disabled)~.el-input .el-input__inner:not(.is-disabled),
+.el-input-number__increase:hover:not(.is-disabled)~.el-input .el-input__inner:not(.is-disabled){border-color:$active-color}

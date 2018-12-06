@@ -10,7 +10,7 @@
       'el-input--prefix': $slots.prefix || prefixIcon,
       'el-input--suffix': $slots.suffix || suffixIcon || clearable
     }
-    ]"
+    ]" style="outline:none;"
     @mouseenter="hovering = true"
     @mouseleave="hovering = false"
   >
@@ -20,6 +20,7 @@
         <slot name="prepend"></slot>
       </div>
       <input
+        style="outline:none;"
         :tabindex="tabindex"
         v-if="type !== 'textarea'"
         class="el-input__inner"

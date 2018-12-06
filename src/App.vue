@@ -1,9 +1,9 @@
 <template>
   <el-container id="app">
     <el-header class="top-nav">
-      <span class="title">极客社群营销平台</span>
+      <span class="title">极客<span class="title-suffix">社群营销平台</span></span>
     </el-header>
-    <el-container>
+    <el-container style="margin-top:5px;">
       <el-aside class="left-side">
         <el-menu
           default-active="rule"
@@ -11,9 +11,9 @@
           :router="true"
           @open="_openMenu"
           @close="_closeMenu"
-          text-color="#fff"
-          background-color="#545c64"
-          active-text-color="#ffd04b">
+          text-color="#000"
+          background-color="#fff"
+          active-text-color="#20b2aa">
           <el-submenu index="1">
             <template slot="title">
               <span>小程序</span>
@@ -49,28 +49,38 @@ export default {
 <style lang="stylus" scoped>
 @import "~@/assets/style/variable.styl"
 #app {
+  background $main-color
+  font-weight 300
   .top-nav{
     /*border-bottom 1px solid #eee*/
-    background $main-color
+    /*background $main-color*/
+    background #fff
+/*    border-bottom 1px solid #ccc*/
+    box-shadow: 0 2px 3px hsla(0,0%,7%,.1), 0 0 0 1px hsla(0,0%,7%,.1);
+    // -webkit-box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
+    // box-shadow: 0 2px 12px 0 rgba(0,0,0,.9);
     display flex
+    justify-content center
     align-items center
     .title{
-      color #fff
-      font-size 23px
-      font-weight 300
+      color $active-color
+      font-size 20px
       letter-spacing 1px
-      transform scale(1, 1.25)
+      transform scale(1,1)
+      .title-suffix{
+        color #000
+      }
     }
   }
   .left-side{
-    background $main-color
+    background #fff
     .menu{
       height 100%
       border-right none
     }
   }
   .main{
-    /*background $main-color*/
+    // background #f5f5f5
   }
 }
 </style>
