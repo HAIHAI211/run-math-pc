@@ -27,12 +27,14 @@
           <span class="input-number-suffix">数学币/次</span>
         </el-form-item>
         <el-form-item label="规则文本：">
-          <el-input
-            type="textarea"
-            :rows="4"
-            placeholder="请输入内容"
-            v-model="form.textarea">
-          </el-input>
+          <!--<el-input-->
+            <!--type="textarea"-->
+            <!--:rows="4"-->
+            <!--placeholder="请输入内容"-->
+            <!--v-model="form.textarea">-->
+          <!--</el-input>-->
+          <editor :content="form.ruleText" :height="500" :z-index="1000"
+                  :auto-height="true" :show-module-name="true"></editor>
         </el-form-item>
       </el-form>
     </el-card>
