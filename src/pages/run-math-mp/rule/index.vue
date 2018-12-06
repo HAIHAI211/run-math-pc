@@ -7,23 +7,23 @@
       </div>
       <el-form ref="form" :model="form" label-width="170px" class="form">
         <el-form-item label="数学币汇率：">
-          <input-number size="medium" v-model="form.step" @change="_inputNumberChange" @input="_handleInput" :min="1" :max="10000" :step="100" label="多少步数"></input-number>
+          <my-input-number size="medium" v-model="form.step" @change="_inputNumberChange" @input="_handleInput" :min="1" :max="10000" :step="100" label="多少步数"></my-input-number>
           <span class="input-number-suffix">步</span>
           <span class="exchange">可兑换</span>
-          <el-input-number size="medium" v-model="form.coin" @change="_inputNumberChange" :min="1" label="多少数学币"></el-input-number>
+          <my-input-number size="medium" v-model="form.coin" @change="_inputNumberChange" :min="1" label="多少数学币"></my-input-number>
           <span class="input-number-suffix">数学币</span>
         </el-form-item>
         <el-form-item label="兑换步数上限：">
-          <el-input-number size="medium" v-model="form.stepLimit" @change="_inputNumberChange" :min="1" :max="100000" :step="100" label="兑换上限"></el-input-number>
+          <my-input-number size="medium" v-model="form.stepLimit" @change="_inputNumberChange" :min="1" :max="100000" :step="100" label="兑换上限"></my-input-number>
           <span class="input-number-suffix">步</span>
           <span class="rule-hint">(所有步数当日24:00清空)</span>
         </el-form-item>
         <el-form-item label="分享次数上限：">
-          <el-input-number size="medium" v-model="form.shareLimit" @change="_inputNumberChange" :min="1" :max="200" :step="1" label="分享次数"></el-input-number>
+          <my-input-number size="medium" v-model="form.shareLimit" @change="_inputNumberChange" :min="1" :max="200" :step="1" label="分享次数"></my-input-number>
           <span class="input-number-suffix">次/日</span>
         </el-form-item>
         <el-form-item label="分享奖励：">
-          <el-input-number size="medium" v-model="form.shareCoin" @change="_inputNumberChange" :min="1" :max="100000" :step="1" label="分享奖励"></el-input-number>
+          <my-input-number size="medium" v-model="form.shareCoin" @change="_inputNumberChange" :min="1" :max="100000" :step="1" label="分享奖励"></my-input-number>
           <span class="input-number-suffix">数学币/次</span>
         </el-form-item>
       </el-form>
@@ -31,10 +31,10 @@
   </div>
 </template>
 <script>
-import InputNumber from '@/components/input-number'
+import MyInputNumber from '@/components/input-number'
 export default {
   components: {
-    InputNumber
+    MyInputNumber
   },
   data () {
     return {

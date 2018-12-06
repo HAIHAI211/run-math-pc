@@ -26,11 +26,11 @@
       @keydown.enter="increase">
       <i :class="`el-icon-${controlsAtRight ? 'arrow-up' : 'plus'}`"></i>
     </span>
-    <el-input
+    <my-input
       ref="input"
       :value="currentInputValue"
       :placeholder="placeholder"
-      :disabled="inputNumberDisabled"
+      :disabled="test"
       :size="inputNumberSize"
       :max="max"
       :min="min"
@@ -41,11 +41,11 @@
       @blur="handleBlur"
       @focus="handleFocus"
       @change="handleInputChange">
-    </el-input>
+    </my-input>
   </div>
 </template>
 <script>
-import ElInput from 'element-ui/packages/input'
+import MyInput from '@/components/input'
 import Focus from 'element-ui/src/mixins/focus'
 import RepeatClick from 'element-ui/src/directives/repeat-click'
 
@@ -64,7 +64,7 @@ export default {
     repeatClick: RepeatClick
   },
   components: {
-    ElInput
+    MyInput
   },
   props: {
     step: {
@@ -80,7 +80,10 @@ export default {
       default: -Infinity
     },
     value: {},
-    disabled: Boolean,
+    disabled: {
+      type: Boolean,
+      default: false
+    },
     size: String,
     controls: {
       type: Boolean,
@@ -102,7 +105,8 @@ export default {
   },
   data () {
     return {
-      currentValue: 0
+      currentValue: 0,
+      test: true
     }
   },
   watch: {
