@@ -3,7 +3,7 @@
     @dragstart.prevent
     :class="[
       'el-input-number',
-      inputNumberSize ? 'el-my-input-number--' + inputNumberSize : '',
+      inputNumberSize ? 'el-input-number--' + inputNumberSize : '',
       { 'is-disabled': inputNumberDisabled },
       { 'is-without-controls': !controls },
       { 'is-controls-right': controlsAtRight }

@@ -7,7 +7,7 @@
       </div>
       <el-form ref="form" :model="form" label-width="170px" class="form">
         <el-form-item label="数学币汇率：">
-          <my-input-number size="medium" v-model="form.step" @change="_inputNumberChange" @input="_handleInput" :min="1" :max="10000" :step="100" label="多少步数"></my-input-number>
+          <input-number size="medium" v-model="form.step" @change="_inputNumberChange" @input="_handleInput" :min="1" :max="10000" :step="100" label="多少步数"></input-number>
           <span class="input-number-suffix">步</span>
           <span class="exchange">可兑换</span>
           <el-input-number size="medium" v-model="form.coin" @change="_inputNumberChange" :min="1" label="多少数学币"></el-input-number>
@@ -31,10 +31,10 @@
   </div>
 </template>
 <script>
-import MyInputNumber from '@/components/input-number'
+import InputNumber from '@/components/input-number'
 export default {
   components: {
-    MyInputNumber
+    InputNumber
   },
   data () {
     return {
