@@ -7,7 +7,7 @@
       </div>
       <el-form ref="form" :model="form" label-width="170px" class="form">
         <el-form-item label="数学币汇率：">
-          <el-input-number size="medium" v-model="form.step" @change="_inputNumberChange" :min="1" :max="10000" :step="100" label="多少步数"></el-input-number>
+          <my-input-number size="medium" v-model="form.step" @change="_inputNumberChange" @input="_handleInput" :min="1" :max="10000" :step="100" label="多少步数"></my-input-number>
           <span class="input-number-suffix">步</span>
           <span class="exchange">可兑换</span>
           <el-input-number size="medium" v-model="form.coin" @change="_inputNumberChange" :min="1" label="多少数学币"></el-input-number>
@@ -31,7 +31,11 @@
   </div>
 </template>
 <script>
+import MyInputNumber from '@/components/input-number'
 export default {
+  components: {
+    MyInputNumber
+  },
   data () {
     return {
       form: {
@@ -41,6 +45,7 @@ export default {
         shareLimit: 10,
         shareCoin: 100
       },
+      timeFlag: null,
       lastTime: 0,
       updateState: 0
     }
@@ -51,36 +56,32 @@ export default {
         case 0:
           return '初始状态'
         case 1:
-          return '开始修改'
+          return '正在修改...'
         case 2:
-          return '修改成功'
+          return '已保存'
       }
     }
   },
   watch: {
     form: {
       handler (newV, oldV) {
-        // let nowTime = Date.now()
-        // if (this.updateState === 0 || this.updateState === 2) {
-        //   this.lastTime = nowTime
-        // }
-        // console.log('nowTime', nowTime)
-        // console.log('lastTime', this.lastTime)
-        // console.log('gapTime', nowTime - this.lastTime > 1000)
-        // if (nowTime - this.lastTime > 1000) { // 如果超过500ms，就认为一次更新结束，自动上传数据
-        //   this.updateState = 2
-        // } else {
-        //   this.updateState = 1
-        // }
-        // this.lastTime = nowTime
-        // console.log(newV)
+        this.updateState = 1
+        if (this.timeFlag) {
+          clearTimeout(this.timeFlag)
+        }
+        this.timeFlag = setTimeout(() => {
+          this.updateState = 2
+        }, 500)
       },
       deep: true
     }
   },
   methods: {
     _inputNumberChange (v) {
-      // console.log('inputNumber', v)
+      console.log('inputNumber', v)
+    },
+    _handleInput (e) {
+      console.log('inputfsaf', e)
     },
     onSubmit () {
       // console.log('submit!')
@@ -91,6 +92,11 @@ export default {
 <style lang="stylus" scoped>
   @import "~@/assets/style/variable.styl"
   .rule-page{
+    .submit-state{
+      padding-left 30px
+      font-size 13px
+      color lightseagreen
+    }
     .form{
       .exchange{
         font-size 18px
