@@ -42,6 +42,7 @@
 </template>
 <script>
 import MyInputNumber from '@/components/input-number'
+import {rule as api} from '@/api'
 export default {
   components: {
     MyInputNumber
@@ -101,6 +102,11 @@ export default {
     onSubmit () {
       // console.log('submit!')
     }
+  },
+  async mounted () {
+    console.log('mounted')
+    const result = await api.getRules()
+    console.log(result)
   }
 }
 </script>

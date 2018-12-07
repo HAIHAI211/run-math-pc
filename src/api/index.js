@@ -1,4 +1,4 @@
-import user from './modules/user'
+import rule from './modules/rule'
 export {
-  user
+  rule
 }
