@@ -128,15 +128,15 @@ Vue.use(VueHtml5Editor, {
     'font',
     'align',
     'list',
-    'link',
-    'unlink',
+    // 'link',
+    // 'unlink',
     'tabulation',
-    'image',
+    // 'image',
     'hr',
     'eraser',
-    'undo',
-    'full-screen',
-    'info'
+    'undo'
+    // 'full-screen',
+    // 'info'
   ],
   // 扩展模块，具体可以参考examples或查看源码
   // extended modules

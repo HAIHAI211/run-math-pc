@@ -46,11 +46,11 @@ export default {
   }
 }
 </script>
-<style lang="stylus" scoped>
+<style lang="stylus">
 @import "~@/assets/style/variable.styl"
 #app {
   background $main-color
-  font-weight 300
+  font-weight 400
   .top-nav{
     /*border-bottom 1px solid #eee*/
     /*background $main-color*/
@@ -64,6 +64,7 @@ export default {
     align-items center
     .title{
       color $active-color
+      font-weight 300
       font-size 20px
       letter-spacing 1px
       transform scale(1,1)

@@ -33,8 +33,8 @@
             <!--placeholder="请输入内容"-->
             <!--v-model="form.textarea">-->
           <!--</el-input>-->
-          <editor :content="form.ruleText" :height="500" :z-index="1000"
-                  :auto-height="true" :show-module-name="true"></editor>
+          <vue-html5-editor :content="form.ruleText" :height="360" :z-index="1000"
+                  :auto-height="true" :show-module-name="true" @change="_editorChange"></vue-html5-editor>
         </el-form-item>
       </el-form>
     </el-card>
@@ -82,7 +82,7 @@ export default {
         }
         this.timeFlag = setTimeout(() => {
           this.updateState = 2
-        }, 500)
+        }, 600)
       },
       deep: true
     }
@@ -93,6 +93,10 @@ export default {
     },
     _handleInput (e) {
       // console.log('inputfsaf', e)
+    },
+    _editorChange (e) {
+      // console.log(e)
+      this.form.ruleText = e
     },
     onSubmit () {
       // console.log('submit!')
