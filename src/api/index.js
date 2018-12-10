@@ -1,4 +1,4 @@
-import rule from './modules/rule'
+import runMathMp from './modules/run-math-mp'
 export {
-  rule
+  runMathMp
 }

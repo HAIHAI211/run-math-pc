@@ -26,13 +26,10 @@
           <my-input-number size="medium" v-model="form.shareCoin" @change="_inputNumberChange" :min="1" :max="100000" :step="1" label="分享奖励"></my-input-number>
           <span class="input-number-suffix">数学币/次</span>
         </el-form-item>
+        <el-form-item label="客服自动回复：">
+          <el-input v-model="form.kefuText"></el-input>
+        </el-form-item>
         <el-form-item label="规则文本：">
-          <!--<el-input-->
-            <!--type="textarea"-->
-            <!--:rows="4"-->
-            <!--placeholder="请输入内容"-->
-            <!--v-model="form.textarea">-->
-          <!--</el-input>-->
           <vue-html5-editor :content="form.ruleText" :height="360" :z-index="1000"
                   :auto-height="true" :show-module-name="true" @change="_editorChange"></vue-html5-editor>
         </el-form-item>
@@ -42,7 +39,6 @@
 </template>
 <script>
 import MyInputNumber from '@/components/input-number'
-import {rule as api} from '@/api'
 function _createWatchObj (name) {
   return {
     handler (newV, oldV) {
@@ -67,14 +63,14 @@ function _createWatchObj (name) {
         } else if (name === 'share_coin') {
           params.value = this.form.shareCoin
         } else if (name === 'custom_service_content') {
-          // todo
+          params.valueText = this.form.kefuText
         } else if (name === 'active_rule') {
           params.valueText = this.form.ruleText
         }
         // console.log('params', params)
         try {
           this.updateState = 2
-          await api.updateRule(params)
+          await this.api.runMathMp.updateRule(params)
           this.updateState = 3
         } catch (e) {
           this.updateState = 4
@@ -96,6 +92,7 @@ export default {
         stepLimit: undefined,
         shareLimit: undefined,
         shareCoin: undefined,
+        kefuText: undefined,
         ruleText: undefined
       },
       init: false,
@@ -126,6 +123,7 @@ export default {
     'form.stepLimit': _createWatchObj('dayly_step_change_limit'),
     'form.shareLimit': _createWatchObj('dayly_share_limit'),
     'form.shareCoin': _createWatchObj('shareCoin'),
+    'form.kefuText': _createWatchObj('custom_service_content'),
     'form.ruleText': _createWatchObj('active_rule')
   },
   methods: {
@@ -141,7 +139,8 @@ export default {
     },
     async _fetchRules () {
       this.init = false
-      const result = await api.getRules()
+      const result = await this.api.runMathMp.getRules()
+      console.log('result', result)
       for (let i = 0; i < result.data.length; i++) {
         let rule = result.data[i]
         console.log(rule.name)
@@ -160,7 +159,7 @@ export default {
             this.form.shareCoin = rule.value
             break
           case 'custom_service_content':
-            // todo
+            this.form.kefuText = rule.valueText
             break
           case 'active_rule':
             this.form.ruleText = rule.valueText

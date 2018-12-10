@@ -1,5 +1,5 @@
 import axios from 'axios'
-
+import {Message} from 'element-ui'
 const config = {
   // baseURL: 'http://192.168.40.188:9999/service-system',
   timeout: 6000
@@ -21,9 +21,18 @@ instance.interceptors.response.use(function (response) {
   if (response.data && response.data.code === 0) { // 成功
     return response.data
   }
+  // this.$message.error(response.data.errMsg)
+  Message.error({
+    showClose: true,
+    message: response.data.msg
+  })
   return Promise.reject(response.data)
 }, function (error) {
   // 对响应错误做点什么
+  Message.error({
+    showClose: true,
+    message: error.message
+  })
   return Promise.reject(error)
 })
 
