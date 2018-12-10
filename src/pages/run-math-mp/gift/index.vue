@@ -176,9 +176,33 @@
               :show-file-list="false"
               :on-success="handleAvatarSuccess"
               :before-upload="beforeAvatarUpload">
-              <img v-if="imageUrl" :src="imageUrl" class="avatar">
+              <img v-if="form.coverPicUrl" :src="form.coverPicUrl" class="avatar">
               <i v-else class="el-icon-plus avatar-uploader-icon"></i>
             </el-upload>
+          </el-form-item>
+          <el-form-item label="轮播图">
+            <el-upload
+              action="/service-system/setting/upload/file"
+              list-type="picture-card"
+              :on-preview="handlePictureCardPreview"
+              :on-remove="handleRemove"
+              :data="uploadFileData"
+              :file-list="form.infoPicUrlList"
+              :before-upload="beforeAvatarUpload">
+              <i class="el-icon-plus"></i>
+            </el-upload>
+            <el-dialog :visible.sync="previewDialogVisible">
+              <img width="100%" :src="dialogImageUrl" alt="">
+            </el-dialog>
+          </el-form-item>
+          <el-form-item label="剩余总量">
+            <my-input-number size="medium" v-model="form.totalAmount" :min="1" :step="1" label="剩余总量"></my-input-number>
+          </el-form-item>
+          <el-form-item label="价格(数学币)">
+            <my-input-number size="medium" v-model="form.price" :min="1" :step="1" label="价格"></my-input-number>
+          </el-form-item>
+          <el-form-item label="原价(￥)">
+            <my-input-number size="medium" v-model="form.price" :min="1" :step="1" label="原价"></my-input-number>
           </el-form-item>
           <!--<el-form-item>-->
             <!--<el-button type="primary" @click="onSubmit">立即创建</el-button>-->
@@ -191,7 +215,11 @@
 </template>
 <script>
 import config from '@/config.js'
+import MyInputNumber from '@/components/input-number'
 export default {
+  components: {
+    MyInputNumber
+  },
   data () {
     return {
       activeName: 'doc',
@@ -199,7 +227,8 @@ export default {
       pageNum: 1,
       tableData: [],
       giftDialogVisible: false,
-      imageUrl: '', // 临时图片地址
+      previewDialogVisible: false,
+      dialogImageUrl: '', // 预览图片地址
       uploadFileData: {
         type: 'cover'
       },
@@ -250,19 +279,27 @@ export default {
       })
     },
     handleAvatarSuccess (res, file) {
-      this.imageUrl = URL.createObjectURL(file.raw)
+      this.form.coverPicUrl = URL.createObjectURL(file.raw)
     },
     beforeAvatarUpload (file) {
-      const isJPG = file.type === 'image/jpeg'
-      const isLt2M = file.size / 1024 / 1024 < 2
-
-      if (!isJPG) {
-        this.$message.error('上传头像图片只能是 JPG 格式!')
-      }
-      if (!isLt2M) {
-        this.$message.error('上传头像图片大小不能超过 2MB!')
-      }
-      return isJPG && isLt2M
+      // const isJPG = file.type === 'image/jpeg'
+      // const isLt2M = file.size / 1024 / 1024 < 2
+      //
+      // if (!isJPG) {
+      //   this.$message.error('上传头像图片只能是 JPG 格式!')
+      // }
+      // if (!isLt2M) {
+      //   this.$message.error('上传头像图片大小不能超过 2MB!')
+      // }
+      // return isJPG && isLt2M
+      return true
+    },
+    handleRemove (file, fileList) {
+      console.log(file, fileList)
+    },
+    handlePictureCardPreview (file) {
+      this.dialogImageUrl = file.url
+      this.previewDialogVisible = true
     },
     _addIndex (result) {
       for (let i = 0; i < result.data.length; i++) {
