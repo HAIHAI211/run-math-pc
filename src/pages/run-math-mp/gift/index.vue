@@ -140,6 +140,52 @@
         :current-page.sync="pageNum"
         :page-count="pageCount" @current-change="_currentChange">
       </el-pagination>
+      <el-dialog
+        title="编辑/新增礼品"
+        :visible.sync="giftDialogVisible">
+        <!--<span>这是一段信息</span>-->
+        <!--<span slot="footer" class="dialog-footer">-->
+          <!--<el-button @click="giftDialogVisible = false">取 消</el-button>-->
+          <!--<el-button type="primary" @click="giftDialogVisible = false">确 定</el-button>-->
+        <!--</span>-->
+        <el-form ref="form" :model="form" label-width="100px">
+          <el-form-item label="礼品名称">
+            <el-input v-model="form.name"></el-input>
+          </el-form-item>
+          <el-form-item label="适用年级">
+            <el-select v-model="form.fitGrade" placeholder="请选择适用年级">
+              <el-option label="一年级" :value="0"></el-option>
+              <el-option label="二年级" :value="1"></el-option>
+              <el-option label="三年级" :value="2"></el-option>
+              <el-option label="四年级" :value="3"></el-option>
+              <el-option label="五年级" :value="4"></el-option>
+              <el-option label="六年级" :value="5"></el-option>
+              <el-option label="初一" :value="6"></el-option>
+              <el-option label="初二" :value="7"></el-option>
+              <el-option label="初三" :value="8"></el-option>
+              <el-option label="高一" :value="9"></el-option>
+              <el-option label="高二" :value="10"></el-option>
+              <el-option label="高三" :value="11"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="礼品封面">
+            <el-upload
+              class="avatar-uploader"
+              action="/service-system/setting/upload/file"
+              :data="uploadFileData"
+              :show-file-list="false"
+              :on-success="handleAvatarSuccess"
+              :before-upload="beforeAvatarUpload">
+              <img v-if="imageUrl" :src="imageUrl" class="avatar">
+              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            </el-upload>
+          </el-form-item>
+          <!--<el-form-item>-->
+            <!--<el-button type="primary" @click="onSubmit">立即创建</el-button>-->
+            <!--<el-button>取消</el-button>-->
+          <!--</el-form-item>-->
+        </el-form>
+      </el-dialog>
     </el-card>
   </div>
 </template>
@@ -151,7 +197,28 @@ export default {
       activeName: 'doc',
       pageCount: 1,
       pageNum: 1,
-      tableData: []
+      tableData: [],
+      giftDialogVisible: false,
+      imageUrl: '', // 临时图片地址
+      uploadFileData: {
+        type: 'cover'
+      },
+      form: {
+        id: undefined,
+        name: '',
+        coverPicUrl: '',
+        infoPicUrlList: [],
+        fileUrl: '',
+        videoVid: '',
+        videoDuration: '',
+        fitGrade: undefined,
+        totalAmount: 0,
+        price: 0,
+        originalPrice: 0,
+        info: '',
+        pushToIndex: 0,
+        postage: 0
+      }
     }
   },
   watch: {
@@ -167,9 +234,35 @@ export default {
   methods: {
     _edit (e) {
       console.log(e)
+      this.giftDialogVisible = true
     },
     _delete (e) {
       console.log(e)
+      this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$message({
+          type: 'success',
+          message: '删除成功!'
+        })
+      })
+    },
+    handleAvatarSuccess (res, file) {
+      this.imageUrl = URL.createObjectURL(file.raw)
+    },
+    beforeAvatarUpload (file) {
+      const isJPG = file.type === 'image/jpeg'
+      const isLt2M = file.size / 1024 / 1024 < 2
+
+      if (!isJPG) {
+        this.$message.error('上传头像图片只能是 JPG 格式!')
+      }
+      if (!isLt2M) {
+        this.$message.error('上传头像图片大小不能超过 2MB!')
+      }
+      return isJPG && isLt2M
     },
     _addIndex (result) {
       for (let i = 0; i < result.data.length; i++) {
@@ -207,5 +300,28 @@ export default {
     display flex
     justify-content center
     margin-top 30px
+  }
+  .avatar-uploader /deep/ .el-upload {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .avatar-uploader /deep/ .el-upload:hover {
+    border-color: $active-color;
+  }
+  .avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 178px;
+    height: 178px;
+    line-height: 178px;
+    text-align: center;
+  }
+  .avatar {
+    width: 178px;
+    height: 178px;
+    display: block;
   }
 </style>
