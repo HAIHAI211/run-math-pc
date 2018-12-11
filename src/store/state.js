@@ -1,4 +1,5 @@
 const state = {
-  isLogin: false
+  isLogin: false,
+  loading: false
 }
 export default state

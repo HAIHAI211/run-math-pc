@@ -17,6 +17,7 @@
       <el-tabs v-model="activeName">
         <el-tab-pane label="文档礼品" name="doc">
           <el-table
+            v-loading="loading"
             :data="tableData"
             stripe
             style="width: 100%">
@@ -56,6 +57,7 @@
         </el-tab-pane>
         <el-tab-pane label="视频礼品" name="video">
           <el-table
+            v-loading="loading"
             :data="tableData"
             stripe
             style="width: 100%">
@@ -95,6 +97,7 @@
         </el-tab-pane>
         <el-tab-pane label="实物礼品" name="real">
           <el-table
+            v-loading="loading"
             :data="tableData"
             stripe
             style="width: 100%">
@@ -190,21 +193,35 @@
               <i v-else class="el-icon-plus avatar-uploader-icon"></i>
             </el-upload>
           </el-form-item>
-          <el-form-item label="轮播图">
+          <el-form-item label="文件上传">
             <el-upload
               action="/service-system/setting/upload/file"
-              list-type="picture-card"
-              :on-preview="handlePictureCardPreview"
+              :on-preview="handlePreview"
               :on-remove="handleRemove"
-              :data="uploadFileData"
-              :file-list="form.infoPicUrlList"
-              :before-upload="beforeAvatarUpload">
-              <i class="el-icon-plus"></i>
+              :before-remove="beforeRemove"
+              multiple
+              :limit="1"
+              :on-exceed="handleExceed"
+              :file-list="fileList">
+              <el-button size="small" type="primary">点击上传</el-button>
+              <div slot="tip" class="el-upload__tip">文件不得不超过200M</div>
             </el-upload>
-            <el-dialog :visible.sync="previewDialogVisible">
-              <img width="100%" :src="dialogImageUrl" alt="">
-            </el-dialog>
           </el-form-item>
+          <!--<el-form-item label="轮播图">-->
+            <!--<el-upload-->
+              <!--action="/service-system/setting/upload/file"-->
+              <!--list-type="picture-card"-->
+              <!--:on-preview="handlePictureCardPreview"-->
+              <!--:on-remove="handleRemove"-->
+              <!--:data="uploadFileData"-->
+              <!--:file-list="form.infoPicUrlList"-->
+              <!--:before-upload="beforeAvatarUpload">-->
+              <!--<i class="el-icon-plus"></i>-->
+            <!--</el-upload>-->
+            <!--<el-dialog :visible.sync="previewDialogVisible">-->
+              <!--<img width="100%" :src="dialogImageUrl" alt="">-->
+            <!--</el-dialog>-->
+          <!--</el-form-item>-->
           <div class="my-line">
             <el-form-item label="原价(￥)">
               <my-input-number size="medium" v-model="form.price" :min="1" :step="1" label="原价"></my-input-number>
@@ -232,6 +249,7 @@
 <script>
 import config from '@/config.js'
 import MyInputNumber from '@/components/input-number'
+import {mapState} from 'vuex'
 export default {
   components: {
     MyInputNumber
@@ -263,6 +281,17 @@ export default {
         info: '',
         pushToIndex: 0,
         postage: 1
+      }
+    }
+  },
+  computed: {
+    ...mapState(['loading']),
+    fileList: {
+      get () {
+        return [this.form.fileUrl]
+      },
+      set (v) {
+        this.form.fileUrl = v
       }
     }
   },
@@ -325,6 +354,15 @@ export default {
     handlePictureCardPreview (file) {
       this.dialogImageUrl = file.url
       this.previewDialogVisible = true
+    },
+    handlePreview (file) {
+      console.log(file)
+    },
+    handleExceed (files, fileList) {
+      this.$message.warning(`当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`)
+    },
+    beforeRemove (file, fileList) {
+      return this.$confirm(`确定移除 ${file.name}？`)
     },
     _addIndex (result) {
       for (let i = 0; i < result.data.length; i++) {

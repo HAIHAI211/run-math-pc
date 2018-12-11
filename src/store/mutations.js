@@ -7,6 +7,9 @@ const mutations = {
   * */
   [types.SET_IS_LOGIN] (state, v) {
     state.isLogin = v
+  },
+  [types.SET_LOADING] (state, v) {
+    state.loading = v
   }
 }
 
