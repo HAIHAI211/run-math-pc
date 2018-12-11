@@ -148,26 +148,36 @@
           <!--<el-button @click="giftDialogVisible = false">取 消</el-button>-->
           <!--<el-button type="primary" @click="giftDialogVisible = false">确 定</el-button>-->
         <!--</span>-->
-        <el-form ref="form" :model="form" label-width="100px">
-          <el-form-item label="礼品名称">
-            <el-input v-model="form.name"></el-input>
-          </el-form-item>
-          <el-form-item label="适用年级">
-            <el-select v-model="form.fitGrade" placeholder="请选择适用年级">
-              <el-option label="一年级" :value="0"></el-option>
-              <el-option label="二年级" :value="1"></el-option>
-              <el-option label="三年级" :value="2"></el-option>
-              <el-option label="四年级" :value="3"></el-option>
-              <el-option label="五年级" :value="4"></el-option>
-              <el-option label="六年级" :value="5"></el-option>
-              <el-option label="初一" :value="6"></el-option>
-              <el-option label="初二" :value="7"></el-option>
-              <el-option label="初三" :value="8"></el-option>
-              <el-option label="高一" :value="9"></el-option>
-              <el-option label="高二" :value="10"></el-option>
-              <el-option label="高三" :value="11"></el-option>
-            </el-select>
-          </el-form-item>
+        <el-form ref="form" :model="form" label-width="100px" label-position="right">
+          <div class="my-line">
+            <el-form-item label="礼品名称">
+              <el-input v-model="form.name" style="width:200px;"></el-input>
+            </el-form-item>
+            <el-form-item label="适用年级">
+              <el-select v-model="form.fitGrade" placeholder="请选择适用年级">
+                <el-option label="一年级" :value="0"></el-option>
+                <el-option label="二年级" :value="1"></el-option>
+                <el-option label="三年级" :value="2"></el-option>
+                <el-option label="四年级" :value="3"></el-option>
+                <el-option label="五年级" :value="4"></el-option>
+                <el-option label="六年级" :value="5"></el-option>
+                <el-option label="初一" :value="6"></el-option>
+                <el-option label="初二" :value="7"></el-option>
+                <el-option label="初三" :value="8"></el-option>
+                <el-option label="高一" :value="9"></el-option>
+                <el-option label="高二" :value="10"></el-option>
+                <el-option label="高三" :value="11"></el-option>
+              </el-select>
+            </el-form-item>
+          </div>
+          <div class="my-line">
+            <el-form-item label="剩余总量">
+              <my-input-number size="medium" v-model="form.totalAmount" :min="1" :step="1" label="剩余总量"></my-input-number>
+            </el-form-item>
+            <el-form-item label="价格(数学币)">
+              <my-input-number size="medium" v-model="form.price" :min="1" :step="1" label="价格"></my-input-number>
+            </el-form-item>
+          </div>
           <el-form-item label="礼品封面">
             <el-upload
               class="avatar-uploader"
@@ -195,14 +205,20 @@
               <img width="100%" :src="dialogImageUrl" alt="">
             </el-dialog>
           </el-form-item>
-          <el-form-item label="剩余总量">
-            <my-input-number size="medium" v-model="form.totalAmount" :min="1" :step="1" label="剩余总量"></my-input-number>
-          </el-form-item>
-          <el-form-item label="价格(数学币)">
-            <my-input-number size="medium" v-model="form.price" :min="1" :step="1" label="价格"></my-input-number>
-          </el-form-item>
-          <el-form-item label="原价(￥)">
-            <my-input-number size="medium" v-model="form.price" :min="1" :step="1" label="原价"></my-input-number>
+          <div class="my-line">
+            <el-form-item label="原价(￥)">
+              <my-input-number size="medium" v-model="form.price" :min="1" :step="1" label="原价"></my-input-number>
+            </el-form-item>
+            <el-form-item label="包邮" v-if="form.postage">
+              <el-switch
+                :value="form.postage === 1"
+                @input="_setPostage($event)">
+              </el-switch>
+            </el-form-item>
+          </div>
+          <el-form-item label="商品介绍：">
+            <vue-html5-editor :content="form.info" :height="360" :z-index="1000"
+                              :auto-height="true" :show-module-name="true" @change="_editorChange"></vue-html5-editor>
           </el-form-item>
           <!--<el-form-item>-->
             <!--<el-button type="primary" @click="onSubmit">立即创建</el-button>-->
@@ -246,7 +262,7 @@ export default {
         originalPrice: 0,
         info: '',
         pushToIndex: 0,
-        postage: 0
+        postage: 1
       }
     }
   },
@@ -261,9 +277,18 @@ export default {
     }
   },
   methods: {
+    _editorChange (e) {
+      // console.log(e)
+      this.form.info = e
+    },
     _edit (e) {
       console.log(e)
+      this.form = e
       this.giftDialogVisible = true
+    },
+    _setPostage (e) {
+      console.log('setPostage', e)
+      this.form.postage = e ? 1 : 0
     },
     _delete (e) {
       console.log(e)

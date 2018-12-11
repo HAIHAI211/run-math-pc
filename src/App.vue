@@ -6,7 +6,7 @@
     <el-container style="margin-top:5px;">
       <el-aside class="left-side">
         <el-menu
-          default-active="rule"
+          :default-active="defaultActive"
           class="menu"
           :router="true"
           @open="_openMenu"
@@ -40,9 +40,36 @@
 <script>
 export default {
   name: 'App',
+  data () {
+    return {
+      defaultActive: ''
+    }
+  },
   methods: {
     _openMenu () {},
     _closeMenu () {}
+  },
+  watch: {
+    '$route': {
+      handler (to, from) {
+        console.log(`路由从`, from, '到', to.name)
+        switch (to.name) {
+          case 'run-math-mp-rule':
+            this.defaultActive = 'rule'
+            break
+          case 'run-math-mp-gift':
+            this.defaultActive = 'gift'
+            break
+          case 'run-math-mp-adv':
+            this.defaultActive = 'adv'
+            break
+          case 'run-math-mp-order':
+            this.defaultActive = 'order'
+            break
+        }
+      },
+      immediate: true
+    }
   }
 }
 </script>
