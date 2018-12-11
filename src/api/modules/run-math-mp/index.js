@@ -34,5 +34,10 @@ export default {
       pageNum,
       type: 2
     })
+  },
+  deleteGift (id) {
+    return post('/service-system/setting/present/del', {
+      id
+    })
   }
 }

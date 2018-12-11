@@ -147,11 +147,11 @@
         title="编辑/新增礼品"
         :visible.sync="giftDialogVisible">
         <!--<span>这是一段信息</span>-->
-        <!--<span slot="footer" class="dialog-footer">-->
-          <!--<el-button @click="giftDialogVisible = false">取 消</el-button>-->
-          <!--<el-button type="primary" @click="giftDialogVisible = false">确 定</el-button>-->
-        <!--</span>-->
-        <el-form ref="form" :model="form" label-width="100px" label-position="right">
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="giftDialogVisible = false">取 消</el-button>
+          <el-button type="primary" @click="giftDialogVisible = false">确 定</el-button>
+        </span>
+        <el-form ref="form" :model="form" label-width="100px" label-position="right" style="height:600px;overflow-y: scroll">
           <div class="my-line">
             <el-form-item label="礼品名称">
               <el-input v-model="form.name" style="width:200px;"></el-input>
@@ -173,6 +173,9 @@
               </el-select>
             </el-form-item>
           </div>
+          <el-form-item label="公众号编码">
+            <el-input v-model="form.fileKey" style="width:200px;"></el-input>
+          </el-form-item>
           <div class="my-line">
             <el-form-item label="剩余总量">
               <my-input-number size="medium" v-model="form.totalAmount" :min="1" :step="1" label="剩余总量"></my-input-number>
@@ -187,41 +190,43 @@
               action="/service-system/setting/upload/file"
               :data="uploadFileData"
               :show-file-list="false"
-              :on-success="handleAvatarSuccess"
-              :before-upload="beforeAvatarUpload">
+              :on-success="_uploadCoverSuccess"
+              :before-upload="_beforeCoverUpload">
               <img v-if="form.coverPicUrl" :src="form.coverPicUrl" class="avatar">
               <i v-else class="el-icon-plus avatar-uploader-icon"></i>
             </el-upload>
           </el-form-item>
-          <el-form-item label="文件上传">
-            <el-upload
-              action="/service-system/setting/upload/file"
-              :on-preview="handlePreview"
-              :on-remove="handleRemove"
-              :before-remove="beforeRemove"
-              multiple
-              :limit="1"
-              :on-exceed="handleExceed"
-              :file-list="fileList">
-              <el-button size="small" type="primary">点击上传</el-button>
-              <div slot="tip" class="el-upload__tip">文件不得不超过200M</div>
-            </el-upload>
-          </el-form-item>
-          <!--<el-form-item label="轮播图">-->
+          <!--<el-form-item label="文件上传">-->
             <!--<el-upload-->
               <!--action="/service-system/setting/upload/file"-->
-              <!--list-type="picture-card"-->
-              <!--:on-preview="handlePictureCardPreview"-->
+              <!--:on-preview="handlePreview"-->
               <!--:on-remove="handleRemove"-->
-              <!--:data="uploadFileData"-->
-              <!--:file-list="form.infoPicUrlList"-->
-              <!--:before-upload="beforeAvatarUpload">-->
-              <!--<i class="el-icon-plus"></i>-->
+              <!--:before-remove="beforeRemove"-->
+              <!--multiple-->
+              <!--:limit="1"-->
+              <!--:on-exceed="handleExceed">-->
+              <!--<el-button size="small" type="primary">点击上传</el-button>-->
+              <!--<div slot="tip" class="el-upload__tip">文件不得不超过200M</div>-->
             <!--</el-upload>-->
-            <!--<el-dialog :visible.sync="previewDialogVisible">-->
-              <!--<img width="100%" :src="dialogImageUrl" alt="">-->
-            <!--</el-dialog>-->
           <!--</el-form-item>-->
+          <el-form-item label="轮播图">
+            <my-upload
+              action="/service-system/setting/upload/file"
+              list-type="picture-card"
+              :on-preview="handlePictureCardPreview"
+              :on-remove="_lunboRemove"
+              :data="uploadFileData"
+              :limit="5"
+              :file-list="lunboList"
+              :on-exceed="_lunboExceed"
+              :on-success="_uploadLunboSuccess"
+              :before-upload="_beforeLunboUpload">
+              <i class="el-icon-plus"></i>
+            </my-upload>
+            <el-dialog :visible.sync="previewDialogVisible">
+              <img width="100%" :src="dialogImageUrl" alt="">
+            </el-dialog>
+          </el-form-item>
           <div class="my-line">
             <el-form-item label="原价(￥)">
               <my-input-number size="medium" v-model="form.price" :min="1" :step="1" label="原价"></my-input-number>
@@ -249,10 +254,12 @@
 <script>
 import config from '@/config.js'
 import MyInputNumber from '@/components/input-number'
+import MyUpload from '@/components/upload'
 import {mapState} from 'vuex'
 export default {
   components: {
-    MyInputNumber
+    MyInputNumber,
+    MyUpload
   },
   data () {
     return {
@@ -266,6 +273,7 @@ export default {
       uploadFileData: {
         type: 'cover'
       },
+      lunboList: [],
       form: {
         id: undefined,
         name: '',
@@ -280,20 +288,33 @@ export default {
         originalPrice: 0,
         info: '',
         pushToIndex: 0,
-        postage: 1
+        postage: 1,
+        fileKey: ''
       }
     }
   },
   computed: {
-    ...mapState(['loading']),
-    fileList: {
-      get () {
-        return [this.form.fileUrl]
-      },
-      set (v) {
-        this.form.fileUrl = v
-      }
-    }
+    ...mapState(['loading'])
+    // lunboList () {
+    //   let result = []
+    //   for (let i = 0; i < this.form.infoPicUrlList.length; i++) {
+    //     let name = `轮播图${i + 1}`
+    //     let url = this.form.infoPicUrlList[i]
+    //     result.push({
+    //       name,
+    //       url
+    //     })
+    //   }
+    //   return result
+    // }
+    // fileList: {
+    //   get () {
+    //     return [this.form.fileUrl]
+    //   },
+    //   set (v) {
+    //     this.form.fileUrl = v
+    //   }
+    // }
   },
   watch: {
     activeName: {
@@ -303,16 +324,56 @@ export default {
         await this._fetchGifts()
       },
       immediate: true
+    },
+    giftDialogVisible (v) {
+      if (!v) {
+        this._clearForm()
+      }
     }
   },
   methods: {
+    _clearForm () { // 为了消除轮播图动画
+      console.log('清空form')
+      this.form = {
+        id: undefined,
+        name: '',
+        coverPicUrl: '',
+        infoPicUrlList: [],
+        fileUrl: '',
+        videoVid: '',
+        videoDuration: '',
+        fitGrade: undefined,
+        totalAmount: 0,
+        price: 0,
+        originalPrice: 0,
+        info: '',
+        pushToIndex: 0,
+        postage: 1,
+        fileKey: ''
+      }
+      this.lunboList = []
+    },
+    _initLunboList () {
+      this.lunboList = []
+      let result = []
+      for (let i = 0; i < this.form.infoPicUrlList.length; i++) {
+        let name = `轮播图${i + 1}`
+        let url = this.form.infoPicUrlList[i]
+        result.push({
+          name,
+          url
+        })
+      }
+      this.lunboList = result
+    },
     _editorChange (e) {
       // console.log(e)
       this.form.info = e
     },
     _edit (e) {
       console.log(e)
-      this.form = e
+      this.form = {...e}
+      this._initLunboList()
       this.giftDialogVisible = true
     },
     _setPostage (e) {
@@ -332,10 +393,10 @@ export default {
         })
       })
     },
-    handleAvatarSuccess (res, file) {
+    _uploadCoverSuccess (res, file) { // 上传封面图成功
       this.form.coverPicUrl = URL.createObjectURL(file.raw)
     },
-    beforeAvatarUpload (file) {
+    _beforeCoverUpload (file) { // 上传封面前
       // const isJPG = file.type === 'image/jpeg'
       // const isLt2M = file.size / 1024 / 1024 < 2
       //
@@ -347,6 +408,30 @@ export default {
       // }
       // return isJPG && isLt2M
       return true
+    },
+    _lunboRemove (file, fileList) {
+      // console.log('删除轮播 file', file)
+      // console.log('删除轮播 fileList', fileList)
+      let result = []
+      for (let i = 0; i < fileList.length; i++) {
+        let url = fileList[i].url
+        result.push(url)
+      }
+      this.form.infoPicUrlList = result
+    },
+    _lunboExceed (files, fileList) {
+      this.$message.warning(`轮播图最多5张!`)
+    },
+    _beforeLunboUpload (file) { // 上传轮播图前
+      return true
+    },
+    _uploadLunboSuccess (res, file) { // 上传轮播图成功
+      console.log('轮播图上传成功', res, file)
+      let url = URL.createObjectURL(file.raw)
+      this.form.infoPicUrlList = [
+        ...this.form.infoPicUrlList,
+        url
+      ]
     },
     handleRemove (file, fileList) {
       console.log(file, fileList)
