@@ -67,7 +67,7 @@ function _createWatchObj (name) {
         } else if (name === 'active_rule') {
           params.valueText = this.form.ruleText
         }
-        // console.log('params', params)
+        console.log('params', params)
         try {
           this.updateState = 2
           await this.api.runMathMp.updateRule(params)
@@ -122,7 +122,7 @@ export default {
     'form.coin': _createWatchObj('step_change_value'),
     'form.stepLimit': _createWatchObj('dayly_step_change_limit'),
     'form.shareLimit': _createWatchObj('dayly_share_limit'),
-    'form.shareCoin': _createWatchObj('shareCoin'),
+    'form.shareCoin': _createWatchObj('share_coin'),
     'form.kefuText': _createWatchObj('custom_service_content'),
     'form.ruleText': _createWatchObj('active_rule')
   },

@@ -215,7 +215,7 @@
                 <el-button size="small" type="primary">点击上传</el-button>
                 <!--<div slot="tip" class="el-upload__tip">文件不得不超过200M</div>-->
               </el-upload>
-            </el-form-item>
+            </el-form-item>0
           </div>
           <el-form-item label="轮播图">
             <my-upload
