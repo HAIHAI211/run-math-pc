@@ -59,7 +59,8 @@
             style="width: 100%">
             <el-table-column
               prop="index"
-              label="序号">
+              label="序号"
+              width="100px">
             </el-table-column>
             <el-table-column
               prop="name"
@@ -94,7 +95,8 @@
             style="width: 100%">
             <el-table-column
               prop="index"
-              label="序号">
+              label="序号"
+              width="100px">
             </el-table-column>
             <el-table-column
               prop="name"
@@ -182,7 +184,7 @@
                 <i v-else class="el-icon-plus avatar-uploader-icon"></i>
               </el-upload>
             </el-form-item>
-            <el-form-item label="适用年级">
+            <el-form-item label="适用年级" v-if="form.type === 0 || form.type === 1">
               <el-select v-model="form.fitGrade" placeholder="请选择适用年级">
                 <el-option label="一年级" :value="0"></el-option>
                 <el-option label="二年级" :value="1"></el-option>
@@ -379,7 +381,8 @@ export default {
     },
     _initFileList () {
       this.fileList = [{
-        name: this.utils.jiequ(this.form.fileUrl, '/'),
+        // name: this.utils.jiequ(this.form.fileUrl, '/'),
+        name: '文件',
         url: this.form.fileUrl
       }]
     },
@@ -391,7 +394,9 @@ export default {
       console.log(e)
       this.form = {...e}
       this._initLunboList()
-      this._initFileList()
+      if (this.form.type === 0) {
+        this._initFileList()
+      }
       this.giftDialogVisible = true
     },
     _setPostage (e) {
@@ -410,6 +415,7 @@ export default {
           type: 'success',
           message: '删除成功!'
         })
+        this._fetchGifts()
       })
     },
     _uploadCoverSuccess (res, file) { // 上传封面图成功
