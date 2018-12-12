@@ -42,5 +42,12 @@ export default {
   },
   updateGift (params) {
     return post('/service-system/setting/present/update', params)
+  },
+  getRealOrders (pageNum, status) {
+    return get('/service-system/setting/order/get/real', {
+      pageSize,
+      pageNum,
+      status
+    })
   }
 }

@@ -176,6 +176,7 @@
                 :data="uploadPicData"
                 :show-file-list="false"
                 :on-success="_uploadCoverSuccess"
+                :auto-upload="true"
                 :before-upload="_beforeCoverUpload">
                 <img v-if="form.coverPicUrl" :src="form.coverPicUrl" class="avatar">
                 <i v-else class="el-icon-plus avatar-uploader-icon"></i>
@@ -202,38 +203,38 @@
             <el-form-item label="公众号编码">
               <el-input v-model="form.fileKey" style="width:200px;"></el-input>
             </el-form-item>
-            <!--<el-form-item label="文件上传">-->
-              <!--<el-upload-->
-                <!--action="/service-system/setting/upload/file"-->
-                <!--:data="uploadFileData"-->
-                <!--:on-preview="handlePreview"-->
-                <!--:on-remove="_fileRemove"-->
-                <!--:on-success="_uploadFileSuccess"-->
-                <!--:limit="1"-->
-                <!--:on-exceed="handleExceed">-->
-                <!--<el-button size="small" type="primary">点击上传</el-button>-->
-                <!--&lt;!&ndash;<div slot="tip" class="el-upload__tip">文件不得不超过200M</div>&ndash;&gt;-->
-              <!--</el-upload>-->
-            <!--</el-form-item>-->
+            <el-form-item label="文件上传">
+              <el-upload
+                action="/service-system/setting/upload/file"
+                :data="uploadFileData"
+                :on-preview="handlePreview"
+                :on-remove="_fileRemove"
+                :on-success="_uploadFileSuccess"
+                :limit="1"
+                :on-exceed="handleExceed">
+                <el-button size="small" type="primary">点击上传</el-button>
+                <!--<div slot="tip" class="el-upload__tip">文件不得不超过200M</div>-->
+              </el-upload>
+            </el-form-item>
           </div>
-          <!--<el-form-item label="轮播图">-->
-            <!--<my-upload-->
-              <!--action="/service-system/setting/upload/file"-->
-              <!--list-type="picture-card"-->
-              <!--:on-preview="handlePictureCardPreview"-->
-              <!--:on-remove="_lunboRemove"-->
-              <!--:data="uploadPicData"-->
-              <!--:limit="5"-->
-              <!--:file-list="lunboList"-->
-              <!--:on-exceed="_lunboExceed"-->
-              <!--:on-success="_uploadLunboSuccess"-->
-              <!--:before-upload="_beforeLunboUpload">-->
-              <!--<i class="el-icon-plus"></i>-->
-            <!--</my-upload>-->
-            <!--<el-dialog :visible.sync="previewDialogVisible">-->
-              <!--<img width="100%" :src="dialogImageUrl" alt="">-->
-            <!--</el-dialog>-->
-          <!--</el-form-item>-->
+          <el-form-item label="轮播图">
+            <my-upload
+              action="/service-system/setting/upload/file"
+              list-type="picture-card"
+              :on-preview="handlePictureCardPreview"
+              :on-remove="_lunboRemove"
+              :data="uploadPicData"
+              :limit="5"
+              :file-list="lunboList"
+              :on-exceed="_lunboExceed"
+              :on-success="_uploadLunboSuccess"
+              :before-upload="_beforeLunboUpload">
+              <i class="el-icon-plus"></i>
+            </my-upload>
+            <el-dialog :visible.sync="previewDialogVisible">
+              <img width="100%" :src="dialogImageUrl" alt="">
+            </el-dialog>
+          </el-form-item>
           <div class="my-line" v-if="form.type === 2">
             <el-form-item label="剩余总量">
               <el-input-number size="medium" v-model="form.totalAmount" :min="1" :step="1" label="剩余总量"></el-input-number>
