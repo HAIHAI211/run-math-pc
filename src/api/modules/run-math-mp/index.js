@@ -39,5 +39,8 @@ export default {
     return post('/service-system/setting/present/del', {
       id
     })
+  },
+  updateGift (params) {
+    return post('/service-system/setting/present/update', params)
   }
 }

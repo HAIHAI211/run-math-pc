@@ -149,12 +149,37 @@
         <!--<span>这是一段信息</span>-->
         <span slot="footer" class="dialog-footer">
           <el-button @click="giftDialogVisible = false">取 消</el-button>
-          <el-button type="primary" @click="giftDialogVisible = false">确 定</el-button>
+          <el-button type="primary" @click="_submit">确 定</el-button>
         </span>
         <el-form ref="form" :model="form" label-width="100px" label-position="right" style="height:600px;overflow-y: scroll">
           <div class="my-line">
             <el-form-item label="礼品名称">
               <el-input v-model="form.name" style="width:200px;"></el-input>
+            </el-form-item>
+            <el-form-item label="价格(数学币)">
+              <el-input-number size="medium" v-model="form.price" :min="1" :step="1" label="价格"></el-input-number>
+            </el-form-item>
+          </div>
+          <div class="my-line" v-if="form.type === 1">
+            <el-form-item label="vid">
+              <el-input v-model="form.videoVid" style="width:200px;"></el-input>
+            </el-form-item>
+            <el-form-item label="时长(秒)">
+              <el-input v-model="form.videoDuration" style="width:200px;"></el-input>
+            </el-form-item>
+          </div>
+          <div class="my-line">
+            <el-form-item label="礼品封面">
+              <el-upload
+                class="avatar-uploader"
+                action="/service-system/setting/upload/file"
+                :data="uploadPicData"
+                :show-file-list="false"
+                :on-success="_uploadCoverSuccess"
+                :before-upload="_beforeCoverUpload">
+                <img v-if="form.coverPicUrl" :src="form.coverPicUrl" class="avatar">
+                <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+              </el-upload>
             </el-form-item>
             <el-form-item label="适用年级">
               <el-select v-model="form.fitGrade" placeholder="请选择适用年级">
@@ -173,65 +198,50 @@
               </el-select>
             </el-form-item>
           </div>
-          <el-form-item label="公众号编码">
-            <el-input v-model="form.fileKey" style="width:200px;"></el-input>
-          </el-form-item>
-          <div class="my-line">
-            <el-form-item label="剩余总量">
-              <my-input-number size="medium" v-model="form.totalAmount" :min="1" :step="1" label="剩余总量"></my-input-number>
+          <div class="my-line" v-if="form.type === 0">
+            <el-form-item label="公众号编码">
+              <el-input v-model="form.fileKey" style="width:200px;"></el-input>
             </el-form-item>
-            <el-form-item label="价格(数学币)">
-              <my-input-number size="medium" v-model="form.price" :min="1" :step="1" label="价格"></my-input-number>
-            </el-form-item>
+            <!--<el-form-item label="文件上传">-->
+              <!--<el-upload-->
+                <!--action="/service-system/setting/upload/file"-->
+                <!--:data="uploadFileData"-->
+                <!--:on-preview="handlePreview"-->
+                <!--:on-remove="_fileRemove"-->
+                <!--:on-success="_uploadFileSuccess"-->
+                <!--:limit="1"-->
+                <!--:on-exceed="handleExceed">-->
+                <!--<el-button size="small" type="primary">点击上传</el-button>-->
+                <!--&lt;!&ndash;<div slot="tip" class="el-upload__tip">文件不得不超过200M</div>&ndash;&gt;-->
+              <!--</el-upload>-->
+            <!--</el-form-item>-->
           </div>
-          <el-form-item label="礼品封面">
-            <el-upload
-              class="avatar-uploader"
-              action="/service-system/setting/upload/file"
-              :data="uploadFileData"
-              :show-file-list="false"
-              :on-success="_uploadCoverSuccess"
-              :before-upload="_beforeCoverUpload">
-              <img v-if="form.coverPicUrl" :src="form.coverPicUrl" class="avatar">
-              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-            </el-upload>
-          </el-form-item>
-          <!--<el-form-item label="文件上传">-->
-            <!--<el-upload-->
+          <!--<el-form-item label="轮播图">-->
+            <!--<my-upload-->
               <!--action="/service-system/setting/upload/file"-->
-              <!--:on-preview="handlePreview"-->
-              <!--:on-remove="handleRemove"-->
-              <!--:before-remove="beforeRemove"-->
-              <!--multiple-->
-              <!--:limit="1"-->
-              <!--:on-exceed="handleExceed">-->
-              <!--<el-button size="small" type="primary">点击上传</el-button>-->
-              <!--<div slot="tip" class="el-upload__tip">文件不得不超过200M</div>-->
-            <!--</el-upload>-->
+              <!--list-type="picture-card"-->
+              <!--:on-preview="handlePictureCardPreview"-->
+              <!--:on-remove="_lunboRemove"-->
+              <!--:data="uploadPicData"-->
+              <!--:limit="5"-->
+              <!--:file-list="lunboList"-->
+              <!--:on-exceed="_lunboExceed"-->
+              <!--:on-success="_uploadLunboSuccess"-->
+              <!--:before-upload="_beforeLunboUpload">-->
+              <!--<i class="el-icon-plus"></i>-->
+            <!--</my-upload>-->
+            <!--<el-dialog :visible.sync="previewDialogVisible">-->
+              <!--<img width="100%" :src="dialogImageUrl" alt="">-->
+            <!--</el-dialog>-->
           <!--</el-form-item>-->
-          <el-form-item label="轮播图">
-            <my-upload
-              action="/service-system/setting/upload/file"
-              list-type="picture-card"
-              :on-preview="handlePictureCardPreview"
-              :on-remove="_lunboRemove"
-              :data="uploadFileData"
-              :limit="5"
-              :file-list="lunboList"
-              :on-exceed="_lunboExceed"
-              :on-success="_uploadLunboSuccess"
-              :before-upload="_beforeLunboUpload">
-              <i class="el-icon-plus"></i>
-            </my-upload>
-            <el-dialog :visible.sync="previewDialogVisible">
-              <img width="100%" :src="dialogImageUrl" alt="">
-            </el-dialog>
-          </el-form-item>
-          <div class="my-line">
+          <div class="my-line" v-if="form.type === 2">
+            <el-form-item label="剩余总量">
+              <el-input-number size="medium" v-model="form.totalAmount" :min="1" :step="1" label="剩余总量"></el-input-number>
+            </el-form-item>
             <el-form-item label="原价(￥)">
               <my-input-number size="medium" v-model="form.price" :min="1" :step="1" label="原价"></my-input-number>
             </el-form-item>
-            <el-form-item label="包邮" v-if="form.postage">
+            <el-form-item label="包邮">
               <el-switch
                 :value="form.postage === 1"
                 @input="_setPostage($event)">
@@ -242,10 +252,6 @@
             <vue-html5-editor :content="form.info" :height="360" :z-index="1000"
                               :auto-height="true" :show-module-name="true" @change="_editorChange"></vue-html5-editor>
           </el-form-item>
-          <!--<el-form-item>-->
-            <!--<el-button type="primary" @click="onSubmit">立即创建</el-button>-->
-            <!--<el-button>取消</el-button>-->
-          <!--</el-form-item>-->
         </el-form>
       </el-dialog>
     </el-card>
@@ -270,13 +276,18 @@ export default {
       giftDialogVisible: false,
       previewDialogVisible: false,
       dialogImageUrl: '', // 预览图片地址
-      uploadFileData: {
+      uploadPicData: {
         type: 'cover'
       },
+      uploadFileData: {
+        type: 'file'
+      },
       lunboList: [],
+      formTitle: '',
       form: {
         id: undefined,
         name: '',
+        type: undefined,
         coverPicUrl: '',
         infoPicUrlList: [],
         fileUrl: '',
@@ -332,11 +343,17 @@ export default {
     }
   },
   methods: {
+    _submit () {
+      const result = this.api.runMathMp.updateGift(this.form)
+      console.log('修改礼物订单结果', result)
+      this.giftDialogVisible = false
+    },
     _clearForm () { // 为了消除轮播图动画
       console.log('清空form')
       this.form = {
         id: undefined,
         name: '',
+        type: undefined,
         coverPicUrl: '',
         infoPicUrlList: [],
         fileUrl: '',
@@ -386,7 +403,8 @@ export default {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
-      }).then(() => {
+      }).then(async () => {
+        await this.api.runMathMp.deleteGift(e.id)
         this.$message({
           type: 'success',
           message: '删除成功!'
@@ -432,6 +450,12 @@ export default {
         ...this.form.infoPicUrlList,
         url
       ]
+    },
+    _uploadFileSuccess (res, file) { // 上传文件成功
+      this.form.fileUrl = URL.createObjectURL(file.raw)
+    },
+    _fileRemove (file, fileList) {
+      console.log('文件删除', file)
     },
     handleRemove (file, fileList) {
       console.log(file, fileList)
@@ -499,14 +523,14 @@ export default {
   .avatar-uploader-icon {
     font-size: 28px;
     color: #8c939d;
-    width: 178px;
-    height: 178px;
-    line-height: 178px;
+    width: 200px;
+    height: 200px;
+    line-height: 200px;
     text-align: center;
   }
   .avatar {
-    width: 178px;
-    height: 178px;
+    width: 200px;
+    height: 200px;
     display: block;
   }
 </style>
