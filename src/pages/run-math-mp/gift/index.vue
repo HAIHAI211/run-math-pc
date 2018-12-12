@@ -24,27 +24,23 @@
             <el-table-column
               prop="index"
               label="序号"
-              width="120">
+              width="100px">
             </el-table-column>
             <el-table-column
               prop="name"
-              label="礼品名称"
-              width="400">
+              label="礼品名称">
+            </el-table-column>
+            <el-table-column
+              prop="fitGradeStr"
+              label="适用年级">
             </el-table-column>
             <el-table-column
               prop="presentType"
-              label="类型"
-              width="180">
+              label="类型">
             </el-table-column>
             <el-table-column
-              prop="uploadTime"
-              label="上传时间"
-              width="180">
-            </el-table-column>
-            <el-table-column
-              prop="totalAmount"
-              label="剩余数量"
-              width="180">
+              prop="uploadTimeStr"
+              label="上传时间">
             </el-table-column>
             <el-table-column
               label="操作">
@@ -63,28 +59,23 @@
             style="width: 100%">
             <el-table-column
               prop="index"
-              label="序号"
-              width="120">
+              label="序号">
             </el-table-column>
             <el-table-column
               prop="name"
-              label="礼品名称"
-              width="400">
+              label="礼品名称">
             </el-table-column>
             <el-table-column
-              prop="presentType"
-              label="类型"
-              width="180">
+              prop="fitGradeStr"
+              label="适用年级">
             </el-table-column>
             <el-table-column
-              prop="uploadTime"
-              label="上传时间"
-              width="180">
+              prop="videoVid"
+              label="vid">
             </el-table-column>
             <el-table-column
-              prop="totalAmount"
-              label="剩余数量"
-              width="180">
+              prop="uploadTimeStr"
+              label="上传时间">
             </el-table-column>
             <el-table-column
               label="操作">
@@ -103,28 +94,23 @@
             style="width: 100%">
             <el-table-column
               prop="index"
-              label="序号"
-              width="120">
+              label="序号">
             </el-table-column>
             <el-table-column
               prop="name"
-              label="礼品名称"
-              width="400">
+              label="礼品名称">
             </el-table-column>
             <el-table-column
               prop="price"
-              label="价格(数学币)"
-              width="180">
-            </el-table-column>
-            <el-table-column
-              prop="uploadTime"
-              label="上传时间"
-              width="180">
+              label="价格(数学币)">
             </el-table-column>
             <el-table-column
               prop="totalAmount"
-              label="剩余数量"
-              width="180">
+              label="剩余数量">
+            </el-table-column>
+            <el-table-column
+              prop="uploadTimeStr"
+              label="上传时间">
             </el-table-column>
             <el-table-column
               label="操作">
@@ -158,6 +144,20 @@
             </el-form-item>
             <el-form-item label="价格(数学币)">
               <el-input-number size="medium" v-model="form.price" :min="1" :step="1" label="价格"></el-input-number>
+            </el-form-item>
+          </div>
+          <div class="my-line" v-if="form.type === 2">
+            <el-form-item label="原价(￥)">
+              <my-input-number size="medium" v-model="form.price" :min="1" :step="1" label="原价"></my-input-number>
+            </el-form-item>
+            <el-form-item label="剩余总量">
+              <el-input-number size="medium" v-model="form.totalAmount" :min="1" :step="1" label="剩余总量"></el-input-number>
+            </el-form-item>
+            <el-form-item label="包邮">
+              <el-switch
+                :value="form.postage === 1"
+                @input="_setPostage($event)">
+              </el-switch>
             </el-form-item>
           </div>
           <div class="my-line" v-if="form.type === 1">
@@ -210,12 +210,13 @@
                 :on-preview="handlePreview"
                 :on-remove="_fileRemove"
                 :on-success="_uploadFileSuccess"
+                :file-list="fileList"
                 :limit="1"
                 :on-exceed="handleExceed">
                 <el-button size="small" type="primary">点击上传</el-button>
                 <!--<div slot="tip" class="el-upload__tip">文件不得不超过200M</div>-->
               </el-upload>
-            </el-form-item>0
+            </el-form-item>
           </div>
           <el-form-item label="轮播图">
             <my-upload
@@ -235,20 +236,6 @@
               <img width="100%" :src="dialogImageUrl" alt="">
             </el-dialog>
           </el-form-item>
-          <div class="my-line" v-if="form.type === 2">
-            <el-form-item label="剩余总量">
-              <el-input-number size="medium" v-model="form.totalAmount" :min="1" :step="1" label="剩余总量"></el-input-number>
-            </el-form-item>
-            <el-form-item label="原价(￥)">
-              <my-input-number size="medium" v-model="form.price" :min="1" :step="1" label="原价"></my-input-number>
-            </el-form-item>
-            <el-form-item label="包邮">
-              <el-switch
-                :value="form.postage === 1"
-                @input="_setPostage($event)">
-              </el-switch>
-            </el-form-item>
-          </div>
           <el-form-item label="商品介绍：">
             <vue-html5-editor :content="form.info" :height="360" :z-index="1000"
                               :auto-height="true" :show-module-name="true" @change="_editorChange"></vue-html5-editor>
@@ -284,6 +271,7 @@ export default {
         type: 'file'
       },
       lunboList: [],
+      fileList: [],
       formTitle: '',
       form: {
         id: undefined,
@@ -344,8 +332,14 @@ export default {
     }
   },
   methods: {
-    _submit () {
-      const result = this.api.runMathMp.updateGift(this.form)
+    async _submit () {
+      this.form.infoPicUrlList = this.form.infoPicUrlList.join(',')
+      const result = await this.api.runMathMp.updateGift(this.form)
+      this.$message({
+        type: 'success',
+        message: '修改成功'
+      })
+      this._fetchGifts()
       console.log('修改礼物订单结果', result)
       this.giftDialogVisible = false
     },
@@ -372,7 +366,6 @@ export default {
       this.lunboList = []
     },
     _initLunboList () {
-      this.lunboList = []
       let result = []
       for (let i = 0; i < this.form.infoPicUrlList.length; i++) {
         let name = `轮播图${i + 1}`
@@ -384,6 +377,12 @@ export default {
       }
       this.lunboList = result
     },
+    _initFileList () {
+      this.fileList = [{
+        name: this.utils.jiequ(this.form.fileUrl, '/'),
+        url: this.form.fileUrl
+      }]
+    },
     _editorChange (e) {
       // console.log(e)
       this.form.info = e
@@ -392,6 +391,7 @@ export default {
       console.log(e)
       this.form = {...e}
       this._initLunboList()
+      this._initFileList()
       this.giftDialogVisible = true
     },
     _setPostage (e) {
@@ -413,7 +413,8 @@ export default {
       })
     },
     _uploadCoverSuccess (res, file) { // 上传封面图成功
-      this.form.coverPicUrl = URL.createObjectURL(file.raw)
+      console.log('上传封面图的结果', res)
+      this.form.coverPicUrl = res.data[0]
     },
     _beforeCoverUpload (file) { // 上传封面前
       // const isJPG = file.type === 'image/jpeg'
@@ -428,16 +429,6 @@ export default {
       // return isJPG && isLt2M
       return true
     },
-    _lunboRemove (file, fileList) {
-      // console.log('删除轮播 file', file)
-      // console.log('删除轮播 fileList', fileList)
-      let result = []
-      for (let i = 0; i < fileList.length; i++) {
-        let url = fileList[i].url
-        result.push(url)
-      }
-      this.form.infoPicUrlList = result
-    },
     _lunboExceed (files, fileList) {
       this.$message.warning(`轮播图最多5张!`)
     },
@@ -446,17 +437,27 @@ export default {
     },
     _uploadLunboSuccess (res, file) { // 上传轮播图成功
       console.log('轮播图上传成功', res, file)
-      let url = URL.createObjectURL(file.raw)
+      let url = res.data
       this.form.infoPicUrlList = [
         ...this.form.infoPicUrlList,
         url
       ]
     },
+    _lunboRemove (file, fileList) {
+      let result = []
+      for (let i = 0; i < fileList.length; i++) {
+        let url = fileList[i].url
+        result.push(url)
+      }
+      this.form.infoPicUrlList = result
+    },
     _uploadFileSuccess (res, file) { // 上传文件成功
-      this.form.fileUrl = URL.createObjectURL(file.raw)
+      console.log('文件上传成功', res)
+      this.form.fileUrl = res.data[0]
     },
     _fileRemove (file, fileList) {
       console.log('文件删除', file)
+      this.form.fileUrl = ''
     },
     handleRemove (file, fileList) {
       console.log(file, fileList)
@@ -467,17 +468,62 @@ export default {
     },
     handlePreview (file) {
       console.log(file)
+      window.open(file.url || URL.createObjectURL(file.raw))
     },
     handleExceed (files, fileList) {
-      this.$message.warning(`当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`)
+      this.$message.warning(`请先删除原先的文件`)
     },
     beforeRemove (file, fileList) {
       return this.$confirm(`确定移除 ${file.name}？`)
     },
-    _addIndex (result) {
+    _filterResult (result) {
       for (let i = 0; i < result.data.length; i++) {
         let index = (i + 1) + config.pageSize * (this.pageNum - 1)
-        result.data[i].index = index
+        let item = result.data[i]
+        item.index = index
+        item.uploadTimeStr = this.utils.formatTime(new Date(item.uploadTime))
+        if (this.activeName === 'doc' || this.activeName === 'video') {
+          let fitGradeStr = ''
+          switch (item.fitGrade) {
+            case 0:
+              fitGradeStr = '一年级'
+              break
+            case 1:
+              fitGradeStr = '二年级'
+              break
+            case 2:
+              fitGradeStr = '三年级'
+              break
+            case 3:
+              fitGradeStr = '四年级'
+              break
+            case 4:
+              fitGradeStr = '五年级'
+              break
+            case 5:
+              fitGradeStr = '六年级'
+              break
+            case 6:
+              fitGradeStr = '初一'
+              break
+            case 7:
+              fitGradeStr = '初二'
+              break
+            case 8:
+              fitGradeStr = '初三'
+              break
+            case 9:
+              fitGradeStr = '高一'
+              break
+            case 10:
+              fitGradeStr = '高二'
+              break
+            case 11:
+              fitGradeStr = '高三'
+              break
+          }
+          item.fitGradeStr = fitGradeStr
+        }
       }
     },
     async _fetchGifts () {
@@ -491,7 +537,7 @@ export default {
       }
       const result = await this.api.runMathMp[apiName](this.pageNum)
       console.log('pageCount', result.pageCount)
-      this._addIndex(result)
+      this._filterResult(result)
       this.tableData = result.data
       this.pageCount = result.pageCount
       console.log(result)

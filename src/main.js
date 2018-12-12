@@ -7,11 +7,13 @@ import ElementUI from 'element-ui'
 // import 'element-ui/lib/theme-chalk/index.css'
 import '../theme/index.css'
 import * as api from '@/api'
+import * as utils from '@/utils'
 import App from './App'
 import router from './router'
 import '@/assets/style/index.styl'
 Vue.config.productionTip = false
 Vue.prototype.api = api
+Vue.prototype.utils = utils
 Vue.use(ElementUI)
 Vue.use(VueHtml5Editor, {
   // 全局组件名称，使用new VueHtml5Editor(options)时该选项无效
