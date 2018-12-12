@@ -63,7 +63,7 @@
               label="礼品名">
             </el-table-column>
             <el-table-column
-              prop="userNickName"
+              prop="contactsName"
               label="联系人">
             </el-table-column>
             <el-table-column
@@ -71,15 +71,15 @@
               label="联系电话">
             </el-table-column>
             <el-table-column
-              prop="address"
+              prop="addressStr"
               label="邮寄地址">
             </el-table-column>
             <el-table-column
-              prop="changeTime"
+              prop="changeTimeStr"
               label="兑换时间">
             </el-table-column>
             <el-table-column
-              prop="status"
+              prop="statusStr"
               label="发货状态">
             </el-table-column>
             <el-table-column
@@ -329,9 +329,12 @@ export default {
     _filterResult (result) {
       for (let i = 0; i < result.data.length; i++) {
         let index = (i + 1) + config.pageSize * (this.pageNum - 1)
-        result.data[i].index = index
+        let item = result.data[i]
+        item.index = index
+        item.changeTimeStr = this.utils.formatTime(new Date(item.changeTime))
         if (this.activeName === 'real') {
-          result.data[i].statusStr = result.data[i].status === 0 ? '待发货' : '已发货'
+          item.statusStr = item.status === 0 ? '待发货' : '已发货'
+          item.addressStr = item.addressArea + item.address
         }
       }
     },

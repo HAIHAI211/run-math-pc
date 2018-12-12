@@ -150,7 +150,7 @@
           </div>
           <div class="my-line" v-if="form.type === 2">
             <el-form-item label="原价(￥)">
-              <my-input-number size="medium" v-model="form.price" :min="1" :step="1" label="原价"></my-input-number>
+              <my-input-number size="medium" v-model="form.originalPrice" :min="1" :step="1" label="原价"></my-input-number>
             </el-form-item>
             <el-form-item label="剩余总量">
               <el-input-number size="medium" v-model="form.totalAmount" :min="1" :step="1" label="剩余总量"></el-input-number>
