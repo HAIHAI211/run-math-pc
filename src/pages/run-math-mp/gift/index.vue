@@ -132,7 +132,8 @@
         :page-count="pageCount" @current-change="_currentChange">
       </el-pagination>
       <el-dialog
-        title="编辑/新增礼品"
+        center
+        :title="giftDialogTitle"
         :visible.sync="giftDialogVisible">
         <!--<span>这是一段信息</span>-->
         <span slot="footer" class="dialog-footer">
@@ -298,27 +299,18 @@ export default {
     }
   },
   computed: {
-    ...mapState(['loading'])
-    // lunboList () {
-    //   let result = []
-    //   for (let i = 0; i < this.form.infoPicUrlList.length; i++) {
-    //     let name = `轮播图${i + 1}`
-    //     let url = this.form.infoPicUrlList[i]
-    //     result.push({
-    //       name,
-    //       url
-    //     })
-    //   }
-    //   return result
-    // }
-    // fileList: {
-    //   get () {
-    //     return [this.form.fileUrl]
-    //   },
-    //   set (v) {
-    //     this.form.fileUrl = v
-    //   }
-    // }
+    ...mapState(['loading']),
+    giftDialogTitle () {
+      let title = this.giftDialogEdit ? '编辑' : '新增'
+      if (this.giftDialogType === 'doc') {
+        title += '文档礼品'
+      } else if (this.giftDialogType === 'video') {
+        title += '视频礼品'
+      } else {
+        title += '实物礼品'
+      }
+      return title
+    }
   },
   watch: {
     activeName: {
