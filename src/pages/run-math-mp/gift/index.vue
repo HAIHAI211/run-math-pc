@@ -329,7 +329,7 @@ export default {
   },
   methods: {
     async _submit () {
-      this.form.infoPicUrlList = this.form.infoPicUrlList.join(',')
+      // this.form.infoPicUrlList = this.form.infoPicUrlList.join(',')
       const result = await this.api.runMathMp.updateGift(this.form)
       this.$message({
         type: 'success',
