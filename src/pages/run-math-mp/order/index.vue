@@ -3,8 +3,6 @@
     <el-card class="rule-card">
       <el-tabs v-model="activeName">
         <el-tab-pane label="文档订单" name="doc">
-        </el-tab-pane>
-        <el-tab-pane label="视频礼品" name="video">
           <el-table
             v-loading="loading"
             :data="tableData"
@@ -12,39 +10,65 @@
             style="width: 100%">
             <el-table-column
               prop="index"
-              label="序号"
-              width="120">
+              label="序号">
             </el-table-column>
             <el-table-column
-              prop="name"
-              label="礼品名称"
-              width="400">
+              prop="ordersNo"
+              label="订单号">
             </el-table-column>
             <el-table-column
-              prop="presentType"
-              label="类型"
-              width="180">
+              prop="nickName"
+              label="下单用户">
             </el-table-column>
             <el-table-column
-              prop="uploadTime"
-              label="上传时间"
-              width="180">
+              prop="presentName"
+              label="礼品名">
             </el-table-column>
             <el-table-column
-              prop="totalAmount"
-              label="剩余数量"
-              width="180">
-            </el-table-column>
-            <el-table-column
-              label="操作">
-              <template slot-scope="scope">
-                <el-button @click="_edit(scope.row)" type="text" size="small">编辑</el-button>
-                <el-button @click="_delete(scope.row)" type="text" size="small">删除</el-button>
-              </template>
+              prop="changeTimeStr"
+              label="兑换时间">
             </el-table-column>
           </el-table>
         </el-tab-pane>
-        <el-tab-pane label="实物礼品" name="real">
+        <el-tab-pane label="视频订单" name="video">
+          <el-table
+            v-loading="loading"
+            :data="tableData"
+            stripe
+            style="width: 100%">
+            <el-table-column
+              prop="index"
+              label="序号">
+            </el-table-column>
+            <el-table-column
+              prop="ordersNo"
+              label="订单号">
+            </el-table-column>
+            <el-table-column
+              prop="nickName"
+              label="下单用户">
+            </el-table-column>
+            <el-table-column
+              prop="presentName"
+              label="礼品名">
+            </el-table-column>
+            <el-table-column
+              prop="changeTimeStr"
+              label="兑换时间">
+            </el-table-column>
+          </el-table>
+        </el-tab-pane>
+        <el-tab-pane label="实物订单" name="real">
+          <el-dropdown trigger="click" slot="label" @command="_selectStatus">
+            <span class="el-dropdown-link">
+              {{realTitle}}<i class="el-icon-arrow-down el-icon--right"></i>
+            </span>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item command="all">全部</el-dropdown-item>
+              <el-dropdown-item command="waitSend">待发货</el-dropdown-item>
+              <el-dropdown-item command="hasSend">已发货</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
           <el-table
             v-loading="loading"
             :data="tableData"
@@ -61,6 +85,10 @@
             <el-table-column
               prop="presentName"
               label="礼品名">
+            </el-table-column>
+            <el-table-column
+              prop="nickName"
+              label="下单用户">
             </el-table-column>
             <el-table-column
               prop="contactsName"
@@ -94,7 +122,6 @@
               label="操作">
               <template slot-scope="scope">
                 <el-button @click="_edit(scope.row)" type="text" size="small">编辑</el-button>
-                <el-button @click="_delete(scope.row)" type="text" size="small">删除</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -107,6 +134,30 @@
         :current-page.sync="pageNum"
         :page-count="pageCount" @current-change="_currentChange">
       </el-pagination>
+      <el-dialog
+        center
+        title="编辑订单"
+        :visible.sync="giftDialogVisible">
+        <!--<span>这是一段信息</span>-->
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="giftDialogVisible = false">取 消</el-button>
+          <el-button type="primary" @click="_submit">确 定</el-button>
+        </span>
+        <el-form ref="form" :model="form" label-width="100px" label-position="right">
+          <el-form-item label="已发货">
+            <el-switch
+              :value="form.status === 1"
+              @input="_setStatus($event)">
+            </el-switch>
+          </el-form-item>
+          <el-form-item label="运单号" v-if="form.status === 1">
+            <el-input v-model="form.waybillNo" style="width:200px;"></el-input>
+          </el-form-item>
+          <el-form-item label="备注">
+            <el-input v-model="form.remark" style="width:400px;"></el-input>
+          </el-form-item>
+        </el-form>
+      </el-dialog>
     </el-card>
   </div>
 </template>
@@ -127,58 +178,18 @@ export default {
       pageNum: 1,
       tableData: [],
       giftDialogVisible: false,
-      previewDialogVisible: false,
       dialogImageUrl: '', // 预览图片地址
-      uploadPicData: {
-        type: 'cover'
-      },
-      uploadFileData: {
-        type: 'file'
-      },
-      lunboList: [],
-      formTitle: '',
+      realTitle: '实物订单(全部)',
       form: {
         id: undefined,
-        name: '',
-        type: undefined,
-        coverPicUrl: '',
-        infoPicUrlList: [],
-        fileUrl: '',
-        videoVid: '',
-        videoDuration: '',
-        fitGrade: undefined,
-        totalAmount: 0,
-        price: 0,
-        originalPrice: 0,
-        info: '',
-        pushToIndex: 0,
-        postage: 1,
-        fileKey: ''
+        status: undefined,
+        waybillNo: undefined,
+        remark: undefined
       }
     }
   },
   computed: {
     ...mapState(['loading'])
-    // lunboList () {
-    //   let result = []
-    //   for (let i = 0; i < this.form.infoPicUrlList.length; i++) {
-    //     let name = `轮播图${i + 1}`
-    //     let url = this.form.infoPicUrlList[i]
-    //     result.push({
-    //       name,
-    //       url
-    //     })
-    //   }
-    //   return result
-    // }
-    // fileList: {
-    //   get () {
-    //     return [this.form.fileUrl]
-    //   },
-    //   set (v) {
-    //     this.form.fileUrl = v
-    //   }
-    // }
   },
   watch: {
     activeName: {
@@ -189,142 +200,51 @@ export default {
       },
       immediate: true
     },
-    giftDialogVisible (v) {
-      if (!v) {
-        this._clearForm()
-      }
+    giftDialogVisible: {
+      handler (v) {
+        if (!v) {
+          this.form = {
+            id: undefined,
+            status: undefined,
+            waybillNo: undefined,
+            remark: undefined
+          }
+        }
+      },
+      immediate: true
     }
   },
   methods: {
     _submit () {
-      const result = this.api.runMathMp.updateGift(this.form)
-      console.log('修改礼物订单结果', result)
+      const result = this.api.runMathMp.updateOrder(this.form)
+      console.log('修改订单结果', result)
+      this.$message({
+        type: 'success',
+        message: '修改成功'
+      })
+      this._fetchOrders()
       this.giftDialogVisible = false
     },
-    _clearForm () { // 为了消除轮播图动画
-      console.log('清空form')
-      this.form = {
-        id: undefined,
-        name: '',
-        type: undefined,
-        coverPicUrl: '',
-        infoPicUrlList: [],
-        fileUrl: '',
-        videoVid: '',
-        videoDuration: '',
-        fitGrade: undefined,
-        totalAmount: 0,
-        price: 0,
-        originalPrice: 0,
-        info: '',
-        pushToIndex: 0,
-        postage: 1,
-        fileKey: ''
+    _selectStatus (command) {
+      if (command === 'all') {
+        this.realTitle = '实物订单(全部)'
+        this._fetchOrders()
+      } else if (command === 'waitSend') {
+        this.realTitle = '实物订单(待发货)'
+        this._fetchOrders(0)
+      } else {
+        this.realTitle = '实物订单(已发货)'
+        this._fetchOrders(1)
       }
-      this.lunboList = []
-    },
-    _initLunboList () {
-      this.lunboList = []
-      let result = []
-      for (let i = 0; i < this.form.infoPicUrlList.length; i++) {
-        let name = `轮播图${i + 1}`
-        let url = this.form.infoPicUrlList[i]
-        result.push({
-          name,
-          url
-        })
-      }
-      this.lunboList = result
-    },
-    _editorChange (e) {
-      // console.log(e)
-      this.form.info = e
     },
     _edit (e) {
       console.log(e)
       this.form = {...e}
-      this._initLunboList()
       this.giftDialogVisible = true
     },
-    _setPostage (e) {
-      console.log('setPostage', e)
-      this.form.postage = e ? 1 : 0
-    },
-    _delete (e) {
-      console.log(e)
-      this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(async () => {
-        await this.api.runMathMp.deleteGift(e.id)
-        this.$message({
-          type: 'success',
-          message: '删除成功!'
-        })
-      })
-    },
-    _uploadCoverSuccess (res, file) { // 上传封面图成功
-      this.form.coverPicUrl = URL.createObjectURL(file.raw)
-    },
-    _beforeCoverUpload (file) { // 上传封面前
-      // const isJPG = file.type === 'image/jpeg'
-      // const isLt2M = file.size / 1024 / 1024 < 2
-      //
-      // if (!isJPG) {
-      //   this.$message.error('上传头像图片只能是 JPG 格式!')
-      // }
-      // if (!isLt2M) {
-      //   this.$message.error('上传头像图片大小不能超过 2MB!')
-      // }
-      // return isJPG && isLt2M
-      return true
-    },
-    _lunboRemove (file, fileList) {
-      // console.log('删除轮播 file', file)
-      // console.log('删除轮播 fileList', fileList)
-      let result = []
-      for (let i = 0; i < fileList.length; i++) {
-        let url = fileList[i].url
-        result.push(url)
-      }
-      this.form.infoPicUrlList = result
-    },
-    _lunboExceed (files, fileList) {
-      this.$message.warning(`轮播图最多5张!`)
-    },
-    _beforeLunboUpload (file) { // 上传轮播图前
-      return true
-    },
-    _uploadLunboSuccess (res, file) { // 上传轮播图成功
-      console.log('轮播图上传成功', res, file)
-      let url = URL.createObjectURL(file.raw)
-      this.form.infoPicUrlList = [
-        ...this.form.infoPicUrlList,
-        url
-      ]
-    },
-    _uploadFileSuccess (res, file) { // 上传文件成功
-      this.form.fileUrl = URL.createObjectURL(file.raw)
-    },
-    _fileRemove (file, fileList) {
-      console.log('文件删除', file)
-    },
-    handleRemove (file, fileList) {
-      console.log(file, fileList)
-    },
-    handlePictureCardPreview (file) {
-      this.dialogImageUrl = file.url
-      this.previewDialogVisible = true
-    },
-    handlePreview (file) {
-      console.log(file)
-    },
-    handleExceed (files, fileList) {
-      this.$message.warning(`当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`)
-    },
-    beforeRemove (file, fileList) {
-      return this.$confirm(`确定移除 ${file.name}？`)
+    _setStatus (e) {
+      console.log('setStatus', e)
+      this.form.status = e ? 1 : 0
     },
     _filterResult (result) {
       for (let i = 0; i < result.data.length; i++) {
@@ -338,7 +258,7 @@ export default {
         }
       }
     },
-    async _fetchOrders () {
+    async _fetchOrders (status) {
       let apiName = ''
       if (this.activeName === 'doc') {
         apiName = 'getDocOrders'
@@ -347,7 +267,7 @@ export default {
       } else {
         apiName = 'getRealOrders'
       }
-      const result = await this.api.runMathMp[apiName](this.pageNum)
+      const result = await this.api.runMathMp[apiName](this.pageNum, status)
       console.log('pageCount', result.pageCount)
       this._filterResult(result)
       this.tableData = result.data
@@ -368,28 +288,5 @@ export default {
     display flex
     justify-content center
     margin-top 30px
-  }
-  .avatar-uploader /deep/ .el-upload {
-    border: 1px dashed #d9d9d9;
-    border-radius: 6px;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-  }
-  .avatar-uploader /deep/ .el-upload:hover {
-    border-color: $active-color;
-  }
-  .avatar-uploader-icon {
-    font-size: 28px;
-    color: #8c939d;
-    width: 200px;
-    height: 200px;
-    line-height: 200px;
-    text-align: center;
-  }
-  .avatar {
-    width: 200px;
-    height: 200px;
-    display: block;
   }
 </style>

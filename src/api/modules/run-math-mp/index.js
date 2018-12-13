@@ -49,5 +49,22 @@ export default {
       pageNum,
       status
     })
+  },
+  getVideoOrders (pageNum) {
+    return get('/service-system/setting/order/get/doc', {
+      pageSize,
+      pageNum,
+      type: 1
+    })
+  },
+  getDocOrders (pageNum) {
+    return get('/service-system/setting/order/get/doc', {
+      pageSize,
+      pageNum,
+      type: 0
+    })
+  },
+  updateOrder (params) {
+    return post('/service-system/setting/order/update', params)
   }
 }
