@@ -226,6 +226,7 @@ export default {
       this.giftDialogVisible = false
     },
     _selectStatus (command) {
+      this.pageNum = 1
       if (command === 'all') {
         this.realTitle = '实物订单(全部)'
         this._fetchOrders()

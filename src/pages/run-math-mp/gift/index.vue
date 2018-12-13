@@ -154,7 +154,7 @@
               <my-input-number size="medium" v-model="form.originalPrice" :min="1" :step="1" label="原价"></my-input-number>
             </el-form-item>
             <el-form-item label="剩余总量">
-              <el-input-number size="medium" v-model="form.totalAmount" :min="1" :step="1" label="剩余总量"></el-input-number>
+              <el-input-number size="medium" v-model="form.totalAmount" :min="0" :step="1" label="剩余总量"></el-input-number>
             </el-form-item>
             <el-form-item label="包邮">
               <el-switch
@@ -428,17 +428,16 @@ export default {
       this.form.coverPicUrl = res.data[0]
     },
     _beforeCoverUpload (file) { // 上传封面前
-      // const isJPG = file.type === 'image/jpeg'
-      // const isLt2M = file.size / 1024 / 1024 < 2
-      //
-      // if (!isJPG) {
-      //   this.$message.error('上传头像图片只能是 JPG 格式!')
-      // }
-      // if (!isLt2M) {
-      //   this.$message.error('上传头像图片大小不能超过 2MB!')
-      // }
-      // return isJPG && isLt2M
-      return true
+      const isRightType = file.type === 'image/jpeg' || file.type === 'image/png'
+      const isLt2M = file.size / 1024 / 1024 < 2
+
+      if (!isRightType) {
+        this.$message.error('上传头像图片只能是 JPG/PNG 格式!')
+      }
+      if (!isLt2M) {
+        this.$message.error('上传头像图片大小不能超过 2MB!')
+      }
+      return isRightType && isLt2M
     },
     _lunboExceed (files, fileList) {
       this.$message.warning(`轮播图最多5张!`)

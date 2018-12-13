@@ -66,5 +66,11 @@ export default {
   },
   updateOrder (params) {
     return post('/service-system/setting/order/update', params)
+  },
+  getAdvs () {
+    return get('/service-system/setting/adv/get')
+  },
+  updateAdv (params) {
+    return post('/service-system/setting/adv/update', params)
   }
 }
