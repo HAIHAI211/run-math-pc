@@ -1,19 +1,19 @@
 <template>
   <div class="page gift-page">
-    <el-card class="rule-card">
+    <el-card class="rule-card" style="position: relative;">
 <!--      <div slot="header">
 
       </div>-->
-<!--      <el-dropdown>
+      <el-dropdown style="position: absolute;top:10px;right:20px;z-index: 1000;" @command="_add">
         <el-button type="primary">
-          新增<i class="el-icon-arrow-down el-icon&#45;&#45;right"></i>
+          新增<i class="el-icon-arrow-down el-icon--right"></i>
         </el-button>
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item>文档</el-dropdown-item>
-          <el-dropdown-item>视频</el-dropdown-item>
-          <el-dropdown-item>实物</el-dropdown-item>
+          <el-dropdown-item command="doc">文档</el-dropdown-item>
+          <el-dropdown-item command="video">视频</el-dropdown-item>
+          <el-dropdown-item command="real">实物</el-dropdown-item>
         </el-dropdown-menu>
-      </el-dropdown>-->
+      </el-dropdown>
       <el-tabs v-model="activeName">
         <el-tab-pane label="文档礼品" name="doc">
           <el-table
@@ -148,7 +148,7 @@
               <el-input-number size="medium" v-model="form.price" :min="1" :step="1" label="价格"></el-input-number>
             </el-form-item>
           </div>
-          <div class="my-line" v-if="form.type === 2">
+          <div class="my-line" v-if="giftDialogType === 'real'">
             <el-form-item label="原价(￥)">
               <my-input-number size="medium" v-model="form.originalPrice" :min="1" :step="1" label="原价"></my-input-number>
             </el-form-item>
@@ -162,7 +162,7 @@
               </el-switch>
             </el-form-item>
           </div>
-          <div class="my-line" v-if="form.type === 1">
+          <div class="my-line" v-if="giftDialogType === 'video'">
             <el-form-item label="vid">
               <el-input v-model="form.videoVid" style="width:200px;"></el-input>
             </el-form-item>
@@ -184,7 +184,7 @@
                 <i v-else class="el-icon-plus avatar-uploader-icon"></i>
               </el-upload>
             </el-form-item>
-            <el-form-item label="适用年级" v-if="form.type === 0 || form.type === 1">
+            <el-form-item label="适用年级" v-if="giftDialogType === 'doc' || giftDialogType === 'video'">
               <el-select v-model="form.fitGrade" placeholder="请选择适用年级">
                 <el-option label="一年级" :value="0"></el-option>
                 <el-option label="二年级" :value="1"></el-option>
@@ -201,7 +201,7 @@
               </el-select>
             </el-form-item>
           </div>
-          <div class="my-line" v-if="form.type === 0">
+          <div class="my-line" v-if="giftDialogType === 'doc'">
             <el-form-item label="公众号编码">
               <el-input v-model="form.fileKey" style="width:200px;"></el-input>
             </el-form-item>
@@ -264,6 +264,8 @@ export default {
       pageNum: 1,
       tableData: [],
       giftDialogVisible: false,
+      giftDialogEdit: true,
+      giftDialogType: undefined,
       previewDialogVisible: false,
       dialogImageUrl: '', // 预览图片地址
       uploadPicData: {
@@ -345,6 +347,11 @@ export default {
       console.log('修改礼物订单结果', result)
       this.giftDialogVisible = false
     },
+    _add (command) {
+      this.giftDialogEdit = false
+      this.giftDialogType = command
+      this.giftDialogVisible = true
+    },
     _clearForm () { // 为了消除轮播图动画
       console.log('清空form')
       this.form = {
@@ -392,10 +399,16 @@ export default {
     },
     _edit (e) {
       console.log(e)
+      this.giftDialogEdit = true
       this.form = {...e}
       this._initLunboList()
       if (this.form.type === 0) {
         this._initFileList()
+        this.giftDialogType = 'doc'
+      } else if (this.form.type === 1) {
+        this.giftDialogType = 'video'
+      } else {
+        this.giftDialogType = 'real'
       }
       this.giftDialogVisible = true
     },
