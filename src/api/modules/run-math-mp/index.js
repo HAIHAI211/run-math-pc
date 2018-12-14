@@ -40,6 +40,9 @@ export default {
       id
     })
   },
+  addGift (params) {
+    return post('/service-system/setting/present/add', params)
+  },
   updateGift (params) {
     return post('/service-system/setting/present/update', params)
   },
