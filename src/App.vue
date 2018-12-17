@@ -24,6 +24,7 @@
               <el-menu-item index="gift">礼品</el-menu-item>
               <el-menu-item index="adv">广告</el-menu-item>
               <el-menu-item index="order">订单</el-menu-item>
+              <el-menu-item index="kefu">客服</el-menu-item>
             </el-submenu>
           </el-submenu>
           <el-submenu index="2">
@@ -65,6 +66,9 @@ export default {
             break
           case 'run-math-mp-order':
             this.defaultActive = 'order'
+            break
+          case 'run-math-mp-kefu':
+            this.defaultActive = 'kefu'
             break
         }
       },

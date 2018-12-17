@@ -26,9 +26,9 @@
           <my-input-number size="medium" v-model="form.shareCoin" @change="_inputNumberChange" :min="1" :max="100000" :step="1" label="分享奖励"></my-input-number>
           <span class="input-number-suffix">数学币/次</span>
         </el-form-item>
-        <el-form-item label="客服自动回复：">
-          <el-input v-model="form.kefuText"></el-input>
-        </el-form-item>
+        <!--<el-form-item label="客服自动回复：">-->
+          <!--<el-input v-model="form.kefuText"></el-input>-->
+        <!--</el-form-item>-->
         <el-form-item label="规则文本：">
           <vue-html5-editor :content="form.ruleText" :height="360" :z-index="1000"
                   :auto-height="true" :show-module-name="true" @change="_editorChange"></vue-html5-editor>

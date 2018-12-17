@@ -232,26 +232,38 @@
               :file-list="lunboList"
               :on-exceed="_lunboExceed"
               :on-success="_uploadLunboSuccess"
-              :before-upload="_beforeLunboUpload">
+              :before-upload="_beforeCoverUpload">
               <i class="el-icon-plus"></i>
             </my-upload>
-            <el-dialog :visible.sync="previewDialogVisible">
-              <img width="100%" :src="dialogImageUrl" alt="">
-            </el-dialog>
           </el-form-item>
-          <el-form-item label="商品介绍：">
-            <vue-html5-editor :content="form.info" :height="360" :z-index="1000"
-                              :auto-height="true" :show-module-name="true" @change="_editorChange"></vue-html5-editor>
+          <el-form-item label="商品介绍">
+            <my-upload
+              action="/service-system/setting/upload/file"
+              list-type="picture-card"
+              :on-preview="handlePictureCardPreview"
+              :on-remove="_infoRemove"
+              :data="uploadPicData"
+              :limit="5"
+              :file-list="infoList"
+              :on-exceed="_lunboExceed"
+              :on-success="_uploadInfoSuccess"
+              :before-upload="_beforeCoverUpload">
+              <i class="el-icon-plus"></i>
+            </my-upload>
           </el-form-item>
         </el-form>
       </el-dialog>
     </el-card>
+    <el-dialog :visible.sync="previewDialogVisible">
+      <img width="100%" :src="dialogImageUrl" alt="">
+    </el-dialog>
   </div>
 </template>
 <script>
 import config from '@/config.js'
 import MyInputNumber from '@/components/input-number'
 import MyUpload from '@/components/upload'
+// import MyUploadPicCard from '@/components/my-upload-pic-card'
 import {mapState} from 'vuex'
 export default {
   components: {
@@ -276,6 +288,7 @@ export default {
         type: 'file'
       },
       lunboList: [],
+      infoList: [],
       fileList: [],
       formTitle: '',
       form: {
@@ -283,7 +296,7 @@ export default {
         name: '',
         type: undefined,
         coverPicUrl: '',
-        infoPicUrlList: [],
+        InfoPicUrlListFormat: [],
         fileUrl: '',
         videoVid: '',
         videoDuration: '',
@@ -291,7 +304,7 @@ export default {
         totalAmount: 0,
         price: 0,
         originalPrice: 0,
-        info: '',
+        infoFormat: [],
         pushToIndex: 0,
         postage: 1,
         fileKey: ''
@@ -331,9 +344,10 @@ export default {
     async _submit () {
       // this.form.infoPicUrlList = this.form.infoPicUrlList.join(',')
       const result = await this.api.runMathMp[this.giftDialogEdit ? 'updateGift' : 'addGift'](this.form)
+      console.log('submit', result)
       this.$message({
         type: 'success',
-        message: '修改成功'
+        message: this.giftDialogEdit ? '修改成功' : '新增成功'
       })
       this._fetchGifts()
       console.log('修改礼物订单结果', result)
@@ -342,6 +356,7 @@ export default {
     _add (command) {
       this.giftDialogEdit = false
       this.giftDialogType = command
+      this.form.type = command === 'real' ? 2 : (command === 'doc' ? 0 : 1)
       this.giftDialogVisible = true
     },
     _clearForm () { // 为了消除轮播图动画
@@ -351,7 +366,7 @@ export default {
         name: '',
         type: undefined,
         coverPicUrl: '',
-        infoPicUrlList: [],
+        InfoPicUrlListFormat: [],
         fileUrl: '',
         videoVid: '',
         videoDuration: '',
@@ -359,24 +374,38 @@ export default {
         totalAmount: 0,
         price: 0,
         originalPrice: 0,
-        info: '',
+        infoFormat: [],
         pushToIndex: 0,
         postage: 1,
         fileKey: ''
       }
       this.lunboList = []
+      this.infoList = []
+      this.fileList = []
     },
     _initLunboList () {
       let result = []
-      for (let i = 0; i < this.form.infoPicUrlList.length; i++) {
+      for (let i = 0; i < this.form.InfoPicUrlListFormat.length; i++) {
         let name = `轮播图${i + 1}`
-        let url = this.form.infoPicUrlList[i]
+        let url = this.form.InfoPicUrlListFormat[i]
         result.push({
           name,
           url
         })
       }
       this.lunboList = result
+    },
+    _initInfoList () {
+      let result = []
+      for (let i = 0; i < this.form.infoFormat.length; i++) {
+        let name = `介绍图${i + 1}`
+        let url = this.form.infoFormat[i]
+        result.push({
+          name,
+          url
+        })
+      }
+      this.infoList = result
     },
     _initFileList () {
       this.fileList = [{
@@ -394,6 +423,7 @@ export default {
       this.giftDialogEdit = true
       this.form = {...e}
       this._initLunboList()
+      this._initInfoList()
       if (this.form.type === 0) {
         this._initFileList()
         this.giftDialogType = 'doc'
@@ -432,10 +462,10 @@ export default {
       const isLt2M = file.size / 1024 / 1024 < 2
 
       if (!isRightType) {
-        this.$message.error('上传头像图片只能是 JPG/PNG 格式!')
+        this.$message.error('上传图片只能是 JPG/PNG 格式!')
       }
       if (!isLt2M) {
-        this.$message.error('上传头像图片大小不能超过 2MB!')
+        this.$message.error('上传图片大小不能超过 2MB!')
       }
       return isRightType && isLt2M
     },
@@ -447,9 +477,9 @@ export default {
     },
     _uploadLunboSuccess (res, file) { // 上传轮播图成功
       console.log('轮播图上传成功', res, file)
-      let url = res.data
-      this.form.infoPicUrlList = [
-        ...this.form.infoPicUrlList,
+      let url = res.data[0]
+      this.form.InfoPicUrlListFormat = [
+        ...this.form.InfoPicUrlListFormat,
         url
       ]
     },
@@ -459,7 +489,22 @@ export default {
         let url = fileList[i].url
         result.push(url)
       }
-      this.form.infoPicUrlList = result
+      this.form.InfoPicUrlListFormat = result
+    },
+    _uploadInfoSuccess (res, file) {
+      let url = res.data[0]
+      this.form.infoFormat = [
+        ...this.form.infoFormat,
+        url
+      ]
+    },
+    _infoRemove (file, fileList) {
+      let result = []
+      for (let i = 0; i < fileList.length; i++) {
+        let url = fileList[i].url
+        result.push(url)
+      }
+      this.form.infoFormat = result
     },
     _uploadFileSuccess (res, file) { // 上传文件成功
       console.log('文件上传成功', res)

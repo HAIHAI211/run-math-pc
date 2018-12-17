@@ -75,5 +75,11 @@ export default {
   },
   updateAdv (params) {
     return post('/service-system/setting/adv/update', params)
+  },
+  getKefuPics () {
+    return get('/service-system/setting/rules/get/customPic')
+  },
+  updateKefuPic (params) {
+    return post('/service-system/setting/rules/update/customPic', params)
   }
 }

@@ -30,3 +30,19 @@ html,body{
   }
   //align-items center
 }
+.submit-state{
+  padding-left 30px
+  font-size 13px
+  &.state-1{ // 正在修改
+    color $active-color
+  }
+  &.state-2{ // 正在保存
+    color $active-color
+  }
+  &.state-3{ // 已保存
+    color #999
+  }
+  &.state-4{ // 保存失败
+    color darkred
+  }
+}
