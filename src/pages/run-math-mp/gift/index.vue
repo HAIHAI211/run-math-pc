@@ -149,12 +149,12 @@
               <el-input-number size="medium" v-model="form.price" :min="1" :step="1" label="价格"></el-input-number>
             </el-form-item>
           </div>
+          <el-form-item label="剩余总量">
+            <el-input-number size="medium" v-model="form.totalAmount" :min="0" :step="1" label="剩余总量"></el-input-number>
+          </el-form-item>
           <div class="my-line" v-if="giftDialogType === 'real'">
             <el-form-item label="原价(￥)">
               <my-input-number size="medium" v-model="form.originalPrice" :min="1" :step="1" label="原价"></my-input-number>
-            </el-form-item>
-            <el-form-item label="剩余总量">
-              <el-input-number size="medium" v-model="form.totalAmount" :min="0" :step="1" label="剩余总量"></el-input-number>
             </el-form-item>
             <el-form-item label="包邮">
               <el-switch
