@@ -2,6 +2,7 @@
   <el-container id="app">
     <el-header class="top-nav">
       <span class="title">极客<span class="title-suffix">社群营销平台</span></span>
+      <!--<img src="https://profile-1257124244.cos.ap-chengdu.myqcloud.com/micoapp/math.png" alt="极客营销" style="width:24px;height:24px;">-->
     </el-header>
     <el-container style="margin-top:5px;">
       <el-aside class="left-side">
