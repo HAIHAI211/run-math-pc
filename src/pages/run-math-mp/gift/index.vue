@@ -31,7 +31,13 @@
               label="礼品名称">
             </el-table-column>
             <el-table-column
-              prop="fitGradeStr"
+              prop="pushToIndex"
+              :formatter="_formatterPushToIndex"
+              label="首页推荐">
+            </el-table-column>
+            <el-table-column
+              prop="fitGrade"
+              :formatter="_formatterGrade"
               label="适用年级">
             </el-table-column>
             <el-table-column
@@ -39,7 +45,8 @@
               label="类型">
             </el-table-column>
             <el-table-column
-              prop="uploadTimeStr"
+              prop="uploadTime"
+              :formatter="_formatterUploadTime"
               label="上传时间">
             </el-table-column>
             <el-table-column
@@ -67,7 +74,13 @@
               label="礼品名称">
             </el-table-column>
             <el-table-column
-              prop="fitGradeStr"
+              prop="pushToIndex"
+              :formatter="_formatterPushToIndex"
+              label="首页推荐">
+            </el-table-column>
+            <el-table-column
+              prop="fitGrade"
+              :formatter="_formatterGrade"
               label="适用年级">
             </el-table-column>
             <el-table-column
@@ -75,7 +88,8 @@
               label="vid">
             </el-table-column>
             <el-table-column
-              prop="uploadTimeStr"
+              prop="uploadTime"
+              :formatter="_formatterUploadTime"
               label="上传时间">
             </el-table-column>
             <el-table-column
@@ -103,6 +117,11 @@
               label="礼品名称">
             </el-table-column>
             <el-table-column
+              prop="pushToIndex"
+              :formatter="_formatterPushToIndex"
+              label="首页推荐">
+            </el-table-column>
+            <el-table-column
               prop="price"
               label="价格(数学币)">
             </el-table-column>
@@ -111,7 +130,8 @@
               label="剩余数量">
             </el-table-column>
             <el-table-column
-              prop="uploadTimeStr"
+              prop="uploadTime"
+              :formatter="_formatterUploadTime"
               label="上传时间">
             </el-table-column>
             <el-table-column
@@ -149,9 +169,17 @@
               <el-input-number size="medium" v-model="form.price" :min="1" :step="1" label="价格"></el-input-number>
             </el-form-item>
           </div>
-          <el-form-item label="剩余总量">
-            <el-input-number size="medium" v-model="form.totalAmount" :min="0" :step="1" label="剩余总量"></el-input-number>
-          </el-form-item>
+          <div class="my-line">
+            <el-form-item label="剩余总量">
+              <el-input-number size="medium" v-model="form.totalAmount" :min="0" :step="1" label="剩余总量"></el-input-number>
+            </el-form-item>
+            <el-form-item label="首页推荐">
+              <el-switch
+                :value="form.pushToIndex === 1"
+                @input="_setPushIndex($event)">
+              </el-switch>
+            </el-form-item>
+          </div>
           <div class="my-line" v-if="giftDialogType === 'real'">
             <el-form-item label="原价(￥)">
               <my-input-number size="medium" v-model="form.originalPrice" :min="1" :step="1" label="原价"></my-input-number>
@@ -356,6 +384,42 @@ export default {
       console.log('修改礼物订单结果', result)
       this.giftDialogVisible = false
     },
+    _formatterPushToIndex (row, column, cellValue, index) {
+      return cellValue === 1 ? '是' : '否'
+    },
+    _formatterGrade (row, column, cellValue, index) {
+      switch (cellValue) {
+        case 0:
+          return '一年级'
+        case 1:
+          return '二年级'
+        case 2:
+          return '三年级'
+        case 3:
+          return '四年级'
+        case 4:
+          return '五年级'
+        case 5:
+          return '六年级'
+        case 6:
+          return '初一'
+        case 7:
+          return '初二'
+        case 8:
+          return '初三'
+        case 9:
+          return '高一'
+        case 10:
+          return '高二'
+        case 11:
+          return '高三'
+        default:
+          return ''
+      }
+    },
+    _formatterUploadTime (row, column, cellValue, index) {
+      return this.utils.formatTime(new Date(cellValue))
+    },
     _add (command) {
       this.giftDialogEdit = false
       this.giftDialogType = command
@@ -438,8 +502,11 @@ export default {
       this.giftDialogVisible = true
     },
     _setPostage (e) {
-      console.log('setPostage', e)
+      // console.log('setPostage', e)
       this.form.postage = e ? 1 : 0
+    },
+    _setPushIndex (e) {
+      this.form.pushToIndex = e ? 1 : 0
     },
     _delete (e) {
       console.log(e)
@@ -539,49 +606,6 @@ export default {
         let index = (i + 1) + config.pageSize * (this.pageNum - 1)
         let item = result.data[i]
         item.index = index
-        item.uploadTimeStr = this.utils.formatTime(new Date(item.uploadTime))
-        if (this.activeName === 'doc' || this.activeName === 'video') {
-          let fitGradeStr = ''
-          switch (item.fitGrade) {
-            case 0:
-              fitGradeStr = '一年级'
-              break
-            case 1:
-              fitGradeStr = '二年级'
-              break
-            case 2:
-              fitGradeStr = '三年级'
-              break
-            case 3:
-              fitGradeStr = '四年级'
-              break
-            case 4:
-              fitGradeStr = '五年级'
-              break
-            case 5:
-              fitGradeStr = '六年级'
-              break
-            case 6:
-              fitGradeStr = '初一'
-              break
-            case 7:
-              fitGradeStr = '初二'
-              break
-            case 8:
-              fitGradeStr = '初三'
-              break
-            case 9:
-              fitGradeStr = '高一'
-              break
-            case 10:
-              fitGradeStr = '高二'
-              break
-            case 11:
-              fitGradeStr = '高三'
-              break
-          }
-          item.fitGradeStr = fitGradeStr
-        }
       }
     },
     async _fetchGifts () {

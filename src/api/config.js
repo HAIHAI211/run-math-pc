@@ -28,7 +28,7 @@ instance.interceptors.response.use(function (response) {
   // this.$message.error(response.data.errMsg)
   Message.error({
     showClose: true,
-    message: response.data.msg
+    message: response.data.data.detailMessage || response.data.msg
   })
   return Promise.reject(response.data)
 }, function (error) {
