@@ -100,7 +100,7 @@ export default {
       if (this.form.id === 2) {
         return '建议尺寸为200px * 300px'
       } else {
-        return '建议尺寸为684px * 260px'
+        return '建议尺寸为342px * 130px'
       }
     }
   },
@@ -179,8 +179,8 @@ export default {
   .avatar-uploader /deep/ .el-upload:hover {
     border-color: $active-color;
   }
-  $w = 684px
-  $h = 260px
+  $w = 342px
+  $h = 130px
   .avatar-uploader-icon {
     font-size: 28px;
     color: #8c939d;

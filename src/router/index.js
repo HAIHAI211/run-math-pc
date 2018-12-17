@@ -7,6 +7,7 @@ import RunMathMpGift from '@/pages/run-math-mp/gift'
 import RunMathMpOrder from '@/pages/run-math-mp/order'
 import RunMathMpAdv from '@/pages/run-math-mp/adv'
 import RunMathMpKefu from '@/pages/run-math-mp/kefu'
+import test from '@/pages/test'
 Vue.use(Router)
 
 export default new Router({
@@ -51,6 +52,10 @@ export default new Router({
           ]
         }
       ]
+    },
+    {
+      path: '/test',
+      component: test
     }
   ]
 })

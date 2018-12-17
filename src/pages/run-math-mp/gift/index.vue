@@ -184,6 +184,7 @@
                 <img v-if="form.coverPicUrl" :src="form.coverPicUrl" class="avatar">
                 <i v-else class="el-icon-plus avatar-uploader-icon"></i>
               </el-upload>
+              <div class="hint" style="color:darkred;">封面图建议尺寸：100px * 100px</div>
             </el-form-item>
             <el-form-item label="适用年级" v-if="giftDialogType === 'doc' || giftDialogType === 'video'">
               <el-select v-model="form.fitGrade" placeholder="请选择适用年级">
@@ -235,6 +236,7 @@
               :before-upload="_beforeCoverUpload">
               <i class="el-icon-plus"></i>
             </my-upload>
+            <div class="hint" style="color:darkred;">轮播图建议尺寸：375px * 300px</div>
           </el-form-item>
           <el-form-item label="商品介绍">
             <my-upload
@@ -250,6 +252,7 @@
               :before-upload="_beforeCoverUpload">
               <i class="el-icon-plus"></i>
             </my-upload>
+            <div class="hint" style="color:darkred;">介绍图建议宽度375px,长度无具体建议，最好比宽度长</div>
           </el-form-item>
         </el-form>
       </el-dialog>
