@@ -11,6 +11,7 @@ import * as utils from '@/utils'
 import App from './App'
 import router from './router'
 import '@/assets/style/index.styl'
+import 'font-awesome/css/font-awesome.css'
 Vue.config.productionTip = false
 Vue.prototype.api = api
 Vue.prototype.utils = utils

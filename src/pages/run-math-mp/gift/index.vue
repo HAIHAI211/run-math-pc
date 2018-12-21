@@ -475,11 +475,10 @@ export default {
       this.infoList = result
     },
     _initFileList () {
-      this.fileList = [{
-        // name: this.utils.jiequ(this.form.fileUrl, '/'),
+      this.fileList = this.form.fileUrl ? [{
         name: '文件',
         url: this.form.fileUrl
-      }]
+      }] : []
     },
     _editorChange (e) {
       // console.log(e)
